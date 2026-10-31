@@ -1,0 +1,6 @@
+# Contains your API keys and private lead data. Never commit or share.
+data/
+__pycache__/
+*.pyc
+*.log
+kiro--analysis

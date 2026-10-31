@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LeadFinder</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EEF3F1; --panel:#FFFFFF; --ink:#16302B; --muted:#5B6F6A; --line:#D3DEDA;
+  --go:#0B7A55; --go-soft:#DDF1E8; --warn:#9A5B00; --warn-soft:#FBEBD2;
+  --stop:#8A3B3B; --stop-soft:#F4E1E1; --chip:#E3EBE8;
+  --display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --body:"Figtree","Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root{--bg:#0F1A18;--panel:#16241F;--ink:#E4EFEB;--muted:#9DB2AC;--line:#2A3C37;
+  --go:#4CC99B;--go-soft:#173A2E;--warn:#F0B35A;--warn-soft:#3A2C16;--stop:#E59A9A;--stop-soft:#3A2020;--chip:#20322D}
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5}
+.wrap{max-width:1180px;margin:0 auto;padding:22px 18px 70px}
+header{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:12px;margin-bottom:18px}
+h1{font-family:var(--display);font-size:clamp(28px,4vw,40px);margin:0;letter-spacing:-.02em;line-height:1}
+h2{font-family:var(--display);font-size:22px;margin:0 0 10px}
+h3{font-family:var(--display);font-size:17px;margin:18px 0 6px}
+nav{display:flex;flex-wrap:wrap;gap:4px;background:var(--chip);padding:4px;border-radius:10px}
+nav button{border:0;background:none;padding:7px 14px;border-radius:7px;font:inherit;color:var(--ink);cursor:pointer}
+nav button[aria-selected="true"]{background:var(--panel);font-weight:600}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:14px}
+label{display:block;font-size:13px;color:var(--muted);margin-bottom:3px}
+input,select,textarea{font:inherit;color:inherit;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%}
+.grid{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));align-items:end}
+.btn{font:inherit;font-size:14px;border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:8px;padding:8px 12px;cursor:pointer;text-decoration:none;white-space:nowrap;display:inline-block}
+.btn.sm{font-size:12.5px;padding:4px 8px}
+.btn.primary{background:var(--go);border-color:var(--go);color:#fff}
+.btn:disabled{opacity:.5;cursor:default}
+:focus-visible{outline:2px solid var(--go);outline-offset:2px}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg label{display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:8px;padding:7px 10px;cursor:pointer;color:var(--ink);font-size:14px;margin:0}
+.seg input{width:auto}
+.note{font-size:13px;color:var(--muted);margin:8px 0 0}
+.msg{padding:10px 12px;border-radius:8px;margin:10px 0;font-size:14px}
+.msg.err{background:var(--stop-soft);color:var(--stop)}
+.msg.ok{background:var(--go-soft);color:var(--go)}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0}
+.toolbar .grow{flex:1}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;min-width:900px}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top;font-size:14px}
+th{font-size:12.5px;color:var(--muted);font-weight:600;background:var(--panel);position:sticky;top:0;cursor:pointer;user-select:none}
+tr:last-child td{border-bottom:0}
+.nm{font-weight:600}
+.sub{font-size:12.5px;color:var(--muted)}
+.tag{display:inline-block;font-size:12px;padding:2px 8px;border-radius:999px;white-space:nowrap}
+.t-no{background:var(--go-soft);color:var(--go)}
+.t-yes{background:var(--chip);color:var(--muted)}
+.t-weak{background:var(--warn-soft);color:var(--warn)}
+.score{font-family:var(--display);font-weight:700;font-size:18px}
+.hot{color:var(--go)}
+.acts{display:flex;flex-wrap:wrap;gap:4px}
+.issues{margin:4px 0 0;padding-left:16px;font-size:12.5px;color:var(--warn)}
+.tally{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px}
+.tally > div{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 14px}
+.tally b{font-family:var(--display);font-size:22px;display:block;line-height:1.1}
+.tally span{font-size:12.5px;color:var(--muted)}
+td select,td textarea{padding:4px 6px;font-size:13px}
+td textarea{min-width:180px;min-height:34px;resize:vertical}
+.guide{max-width:75ch}
+.guide p,.guide li{line-height:1.6}
+.guide ol,.guide ul{padding-left:20px}
+.tmpl{background:var(--bg);border-radius:8px;padding:10px 12px;white-space:pre-wrap;font-size:14px;margin:6px 0 14px}
+.empty{padding:30px;text-align:center;color:var(--muted)}
+[hidden]{display:none!important}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:s .7s linear infinite;vertical-align:-2px}
+@keyframes s{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spin{animation:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div><h1>LeadFinder</h1><div class="sub">Find businesses that need a website, anywhere in the world.</div></div>
+  <nav role="tablist">
+    <button role="tab" data-tab="find" aria-selected="true">Find leads</button>
+    <button role="tab" data-tab="list" aria-selected="false">My list <span id="listCount"></span></button>
+    <button role="tab" data-tab="guide" aria-selected="false">How to get clients</button>
+    <button role="tab" data-tab="settings" aria-selected="false">Settings</button>
+  </nav>
+</header>
+
+<!-- FIND -->
+<section id="tab-find">
+  <div class="panel">
+    <div class="seg" style="margin-bottom:12px">
+      <label><input type="radio" name="src" value="google" checked> Google Maps (best, needs API key)</label>
+      <label><input type="radio" name="src" value="serpapi"> Google Maps via SerpApi (no Google Cloud)</label>
+      <label><input type="radio" name="src" value="osm"> OpenStreetMap (free)</label>
+    </div>
+    <form id="searchForm" class="grid">
+      <div>
+        <label for="qType">Business type</label>
+        <input id="qType" list="typeList" placeholder="e.g. plumber, dentist, roofer" required>
+        <datalist id="typeList"></datalist>
+      </div>
+      <div>
+        <label for="qLoc">Location</label>
+        <input id="qLoc" placeholder="e.g. Austin, Texas, USA  or  Leeds, UK" required>
+      </div>
+      <div>
+        <label for="qFilter">Show</label>
+        <select id="qFilter">
+          <option value="no">No website only</option>
+          <option value="weak">No website + weak websites</option>
+          <option value="all">All businesses</option>
+        </select>
+      </div>
+      <div id="deepWrap">
+        <label for="qDeep">Search depth (Google key)</label>
+        <select id="qDeep">
+          <option value="0">Normal (up to 60)</option>
+          <option value="2">Deep: 4 areas (up to 240)</option>
+          <option value="3">Deeper: 9 areas (up to 540)</option>
+        </select>
+      </div>
+      <div><button class="btn primary" type="submit" id="searchBtn" style="width:100%">Search</button></div>
+    </form>
+    <p class="note" id="srcNote"></p>
+    <div id="findMsg"></div>
+  </div>
+
+  <div id="resultsWrap" hidden>
+    <div class="toolbar">
+      <div class="grow sub" id="resultsInfo"></div>
+      <select id="bestN" class="btn sm" style="width:auto" aria-label="How many to analyze"><option value="5">Top 5</option><option value="10" selected>Top 10</option><option value="20">Top 20</option></select>
+      <button class="btn sm primary" id="bestTargets">Find best targets</button>
+      <button class="btn sm" id="bulkEmail">Find emails on all websites</button>
+      <button class="btn sm" id="bulkAudit">Check all websites</button>
+      <button class="btn sm primary" id="addAll">Add all shown to my list</button>
+      <button class="btn sm" id="exportResults">Download CSV</button>
+    </div>
+    <div class="tablewrap"><table>
+      <thead><tr>
+        <th data-sort="priority">Priority</th><th data-sort="score">Score</th><th data-sort="name">Business</th><th>Phone / email</th>
+        <th data-sort="site">Website</th><th data-sort="reviews">Reviews</th><th>Research</th><th></th>
+      </tr></thead>
+      <tbody id="results"></tbody>
+    </table></div>
+    <p class="note">"Find best targets" analyzes your top leads against nearby competitors and labels each one Hot, Warm or Low for cold calling. Score: higher means a better prospect. No website plus lots of good reviews means an established business that's missing out online.</p>
+  </div>
+</section>
+
+<!-- LIST -->
+<section id="tab-list" hidden>
+  <div class="tally" id="tally"></div>
+  <div class="toolbar">
+    <input id="listSearch" placeholder="Search your list" style="max-width:260px">
+    <select id="listStage" style="max-width:190px"></select>
+    <div class="grow"></div>
+    <label class="btn sm" style="margin:0;color:var(--ink)">Import CSV<input type="file" id="importCsv" accept=".csv" hidden></label>
+    <button class="btn sm" id="exportList">Download CSV</button>
+    <button class="btn sm" id="clearList">Clear list</button>
+  </div>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Business</th><th>Priority</th><th>Contact</th><th>Website</th><th>Stage</th><th>Follow-up</th><th>Notes</th><th></th></tr></thead>
+    <tbody id="listBody"></tbody>
+  </table></div>
+</section>
+
+<!-- GUIDE -->
+<section id="tab-guide" hidden>
+  <div class="panel guide">
+    <h2>The best ways to find website clients</h2>
+    <h3>1. Target the right businesses</h3>
+    <p>The best prospects are established local service businesses with no website or a bad one: plumbers, roofers, electricians, dentists, salons, auto repair shops, cleaners, landscapers and restaurants. They need a steady flow of calls, and each new customer is worth a lot to them. Look for 20+ Google reviews and a 4+ rating: those owners are busy and have money, but lose customers who search online.</p>
+    <h3>2. Sell a "digital identity", not just a website</h3>
+    <p>Owners buy outcomes: being found on Google, looking trustworthy, and getting bookings. Use the Digital identity check to show their score, what's missing and what competitors have. Then offer three packages (Starter, Growth, Premium). Most owners choose the middle one, and the monthly care plan gives you recurring income.</p>
+    <p>Only pitch an app to businesses with repeat customers (restaurants, gyms, salons, clinics, schools). For them, an installable web app (PWA) is far cheaper than a store app and installs from their website. For plumbers or lawyers, a great website with click-to-call is the right answer.</p>
+    <h3>2b. Pitch something specific</h3>
+    <p>Before contacting anyone, do 5 minutes of research with the Research buttons. Check their Google listing, Facebook and Instagram. Then name a real problem: "When I search 'plumber in Leeds' you don't show up with a site, but your 4.8-star competitor does." For weak sites, use the issues LeadFinder finds, such as not mobile-friendly, no HTTPS or slow loading.</p>
+    <h3>3. Show, don't tell (the highest-converting method)</h3>
+    <p>Build a quick demo homepage using their name, photos and reviews, then send them the link. Owners reply far more often to "I made this for you, take a look" than to a generic offer. Even a one-page template you customize in 30 minutes works.</p>
+    <h3>4. Channel by country</h3>
+    <ul>
+      <li><b>USA:</b> Phone calls and email work well. Call Tuesday to Thursday, mid-morning. Follow up by email with the demo link. Don't use auto-dialers or pre-recorded messages (TCPA rules), and honor "don't call me again".</li>
+      <li><b>UK:</b> Business email to company addresses is generally allowed with a clear opt-out. Sole traders are treated more like consumers, so be careful. Check numbers against the TPS/CTPS do-not-call lists before cold calling.</li>
+      <li><b>Pakistan, India, UAE, Middle East:</b> WhatsApp gets the most replies. Send a short voice note or message plus the demo link. Visiting in person also works very well.</li>
+      <li><b>Everywhere:</b> Instagram and Facebook DMs work for salons, cafes, bakeries and boutiques that are active there.</li>
+    </ul>
+    <p class="sub">This isn't legal advice. Rules differ by country, so check the local rules on cold calling and email before running a campaign.</p>
+    <h3>5. Follow up (most deals happen here)</h3>
+    <p>Most replies come after the 2nd to 4th contact. Use the Follow-up date in My list: contact on day 1, follow up on day 3, again on day 7 and a last time on day 14. Keep it short and friendly each time.</p>
+    <h3>6. Other ways to get clients</h3>
+    <ul>
+      <li>Freelance sites: Upwork, Fiverr, Freelancer and PeoplePerHour. Build reviews there first.</li>
+      <li>Local Facebook groups and community groups where business owners ask for recommendations.</li>
+      <li>Partnerships with people who serve the same clients: printers, sign makers, accountants and marketing agencies.</li>
+      <li>Referrals: offer every happy client a discount or cash for each business they send you.</li>
+      <li>Your own portfolio site and a Google Business Profile for your web design service.</li>
+    </ul>
+    <h3>Message templates</h3>
+    <p class="sub">Cold email (USA/UK)</p>
+    <div class="tmpl">Subject: Quick idea for {Business}
+
+Hi {Name},
+
+I found {Business} on Google. {Reviews} reviews at {Rating} stars is impressive, but I noticed you don't have a website, so people searching "{type} in {city}" are landing on your competitors instead.
+
+I put together a free sample homepage for you: {demo link}
+
+If you like it, I can have it live within a week for {price}. Worth a quick 10-minute call?
+
+{Your name}
+{Phone} | {Portfolio}
+Reply "no thanks" and I won't contact you again.</div>
+    <p class="sub">WhatsApp</p>
+    <div class="tmpl">Assalam o Alaikum / Hi {Name}, I'm {Your name}, a web designer. I saw {Business} has great reviews on Google but no website. I made a free sample site for you: {demo link}. Can I show you how it would bring more customers? 😊</div>
+    <p class="sub">Phone call opener</p>
+    <div class="tmpl">"Hi, is this the owner? I'll be quick. I'm a local web designer. I was searching for {type} in {city} and your reviews stood out, but I couldn't find a website for you. I've made a free sample homepage. Can I send it to you on WhatsApp or email?"</div>
+  </div>
+</section>
+
+<!-- SETTINGS -->
+<section id="tab-settings" hidden>
+  <div class="panel guide">
+    <h2>Settings</h2>
+    <label for="apiKey">Google Places API key</label>
+    <input id="apiKey" type="password" placeholder="Paste your key here" autocomplete="off">
+    <p class="note" id="envKeyNote"></p>
+    <button class="btn" id="testKey" type="button" style="margin-top:8px">Test Google key</button>
+    <div id="testMsg"></div>
+    <label style="margin-top:12px" for="serpKey">SerpApi key (optional, for "Google Maps via SerpApi")</label>
+    <input id="serpKey" type="password" placeholder="Paste your SerpApi key" autocomplete="off">
+    <p class="note">SerpApi (serpapi.com) returns Google Maps results without a Google Cloud account. Sign up, copy the key from your dashboard, and check their plans for the free search allowance.</p>
+    <label style="margin-top:12px" for="pages">Google results per search</label>
+    <select id="pages" style="max-width:240px">
+      <option value="1">20 (cheapest)</option><option value="2">40</option><option value="3" selected>60 (maximum)</option>
+    </select>
+    <label style="margin-top:12px" for="radius">Competitor search radius</label>
+    <select id="radius" style="max-width:240px">
+      <option value="1000">1 km (dense city centre)</option><option value="3000" selected>3 km</option>
+      <option value="8000">8 km</option><option value="20000">20 km (rural / trades)</option>
+    </select>
+    <label style="margin-top:12px" for="myName">Your name (used in AI scripts)</label>
+    <input id="myName" placeholder="e.g. Ali Raza">
+    <label style="margin-top:8px" for="myBusiness">Your business name</label>
+    <input id="myBusiness" placeholder="e.g. Raza Web Studio">
+
+    <h3>Additional API keys</h3>
+    <p class="note">These are stored server-side in <code>data/config.json</code> and used by the Dorking, WebCrawler, PageSpeed, and Identity modules.</p>
+    <label style="margin-top:8px" for="cseKey">Google Custom Search API key (for Dorking &amp; WebCrawler)</label>
+    <input id="cseKey" type="password" placeholder="AIza… from Google Cloud Custom Search API" autocomplete="off">
+    <label style="margin-top:8px" for="cseId">Custom Search Engine ID (CX)</label>
+    <input id="cseId" placeholder="e.g. 017576662512468239146:omuauf_lfve">
+    <label style="margin-top:8px" for="psKey">PageSpeed / Lighthouse API key (optional — free tier works without one)</label>
+    <input id="psKey" type="password" placeholder="AIza… (optional)" autocomplete="off">
+    <label style="margin-top:8px" for="chKey">Companies House API key (UK owner lookup)</label>
+    <input id="chKey" type="password" placeholder="Paste your Companies House key" autocomplete="off">
+    <label style="margin-top:8px" for="hunterKey">Hunter.io API key (email finder)</label>
+    <input id="hunterKey" type="password" placeholder="Paste your Hunter.io key" autocomplete="off">
+    <button class="btn" id="saveApiKeys" style="margin-top:10px">Save API keys</button>
+    <div id="apiKeysMsg"></div>
+
+    <h3>Free AI writer</h3>
+    <label for="aiProvider">AI provider</label>
+    <select id="aiProvider" style="max-width:320px">
+      <option value="ollama">Ollama (free, runs on your computer)</option>
+      <option value="openai">OpenAI-compatible API (LM Studio, Groq, OpenRouter…)</option>
+    </select>
+    <label style="margin-top:8px" for="aiModel">Model name</label>
+    <input id="aiModel" placeholder="llama3.2">
+    <label style="margin-top:8px" for="aiBase">Base URL</label>
+    <input id="aiBase" placeholder="http://localhost:11434">
+    <label style="margin-top:8px" for="aiKey">API key (not needed for Ollama)</label>
+    <input id="aiKey" type="password" autocomplete="off">
+    <p class="note">Ollama: install from ollama.com, run <code>ollama pull llama3.2</code>, keep it running. LM Studio: base URL <code>http://localhost:1234/v1</code>. Cloud providers with free tiers: use their OpenAI-compatible base URL and key.</p>
+    <button class="btn primary" id="saveSettings" style="margin-top:12px">Save settings</button>
+    <div id="settingsMsg"></div>
+    <h3>How to get a Google Places API key</h3>
+    <p class="note">If a search fails, press "Test Google key". The message tells you exactly which step to fix.</p>
+    <ol>
+      <li>Go to console.cloud.google.com and create a project.</li>
+      <li>Turn on billing (Google requires a card; there is a monthly free usage allowance, so check their current pricing).</li>
+      <li>Open "APIs &amp; Services", then "Library", and enable <b>Places API (New)</b>.</li>
+      <li>Open "Credentials", create an API key. Under "API restrictions" choose Places API (New). Leave "Application restrictions" as None.</li>
+      <li>Paste it above. The key stays on your computer.</li>
+    </ol>
+    <p class="note">Tip: set a daily quota limit in Google Cloud so you never get a surprise bill.</p>
+  </div>
+</section>
+</div>
+
+<script>
+(function(){
+const $ = s => document.querySelector(s);
+const STAGES = ["New","Contacted","No answer","Interested","Follow up","Proposal sent","Won","Not interested"];
+const store = {
+  get(k, d){ try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch(e){ return d; } },
+  set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
+};
+let settings = store.get("lf-settings", {apiKey:"", pages:"3"});
+let myList = store.get("lf-list", []);
+let results = [], sortKey = "score", sortDir = -1, categories = [];
+
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const digits = p => { let d = String(p||"").replace(/\D/g,""); return d; };
+const host = u => { try { return new URL(/^https?:/i.test(u)?u:"http://"+u).hostname.replace(/^www\./,""); } catch(e){ return u; } };
+const isSocial = u => /facebook\.com|instagram\.com|linktr\.ee|wa\.me|business\.site|g\.page/i.test(u||"");
+
+async function api(path, body){
+  const r = await fetch(path, {method: body ? "POST" : "GET", headers: {"Content-Type":"application/json"}, body: body ? JSON.stringify(body) : undefined});
+  const j = await r.json();
+  if (!r.ok || j.error) throw new Error(j.error || "Request failed");
+  return j;
+}
+
+/* tabs */
+function showTab(name){
+  document.querySelectorAll("nav button").forEach(x => x.setAttribute("aria-selected", x.dataset.tab === name));
+  document.querySelectorAll("section[id^='tab-']").forEach(s => s.hidden = s.id !== "tab-" + name);
+  if (name === "list") renderList();
+  const cb = tabHooks[name]; if (cb) cb();
+  window.scrollTo(0, 0);
+}
+const tabHooks = {};
+function bindTab(b, onShow){ if (onShow) tabHooks[b.dataset.tab] = onShow; b.onclick = () => showTab(b.dataset.tab); }
+document.querySelectorAll("nav button").forEach(b => bindTab(b));
+
+/* meta */
+api("/api/meta").then(m => {
+  categories = m.categories;
+  $("#typeList").innerHTML = categories.map(c => `<option value="${esc(c)}">`).join("");
+  $("#envKeyNote").textContent = m.envKey ? "A key was also found in the GOOGLE_PLACES_API_KEY environment variable; it's used when this box is empty." : "";
+}).catch(()=>{});
+
+/* settings */
+$("#apiKey").value = settings.apiKey || "";
+$("#serpKey").value = settings.serpKey || "";
+$("#radius").value = settings.radius || "3000";
+$("#myName").value = settings.myName || "";
+$("#myBusiness").value = settings.myBusiness || "";
+const ai0 = settings.ai || {};
+$("#aiProvider").value = ai0.provider || "ollama";
+$("#aiModel").value = ai0.model || "";
+$("#aiBase").value = ai0.baseUrl || "";
+$("#aiKey").value = ai0.apiKey || "";
+$("#pages").value = settings.pages || "3";
+$("#saveSettings").onclick = () => {
+  settings = {apiKey: $("#apiKey").value.trim(), serpKey: $("#serpKey").value.trim(), pages: $("#pages").value,
+    radius: $("#radius").value, myName: $("#myName").value.trim(), myBusiness: $("#myBusiness").value.trim(),
+    ai: {provider: $("#aiProvider").value, model: $("#aiModel").value.trim(), baseUrl: $("#aiBase").value.trim(), apiKey: $("#aiKey").value.trim()}};
+  store.set("lf-settings", settings);
+  $("#settingsMsg").innerHTML = '<div class="msg ok">Settings saved.</div>';
+};
+
+// Load server-side API keys into the Settings form on tab open
+async function loadApiKeys(){
+  try {
+    const j = await api("/api/assistant/config", {});
+    const k = (j.config || {}).keys || {};
+    if (k.cse    !== undefined) $("#cseKey").value    = k.cse    ? "••••saved" : "";
+    if (k.cseId  !== undefined) $("#cseId").value     = k.cseId  || "";
+    if (k.pagespeed !== undefined) $("#psKey").value  = k.pagespeed ? "••••saved" : "";
+    if (k.ch     !== undefined) $("#chKey").value     = k.ch     ? "••••saved" : "";
+    if (k.hunter !== undefined) $("#hunterKey").value = k.hunter ? "••••saved" : "";
+    if (k.google !== undefined && k.google && !$("#apiKey").value) $("#apiKey").value = "";
+    if (k.serp   !== undefined && k.serp && !$("#serpKey").value) $("#serpKey").value = "";
+  } catch(e){}
+}
+tabHooks["settings"] = loadApiKeys;
+
+$("#saveApiKeys").onclick = async () => {
+  const keys = {};
+  const cse = $("#cseKey").value.trim();
+  const cseId = $("#cseId").value.trim();
+  const ps = $("#psKey").value.trim();
+  const ch = $("#chKey").value.trim();
+  const hunter = $("#hunterKey").value.trim();
+  if (cse && !cse.startsWith("•")) keys.cse = cse;
+  if (cseId) keys.cseId = cseId;
+  if (ps && !ps.startsWith("•")) keys.pagespeed = ps;
+  if (ch && !ch.startsWith("•")) keys.ch = ch;
+  if (hunter && !hunter.startsWith("•")) keys.hunter = hunter;
+  // Also save the Places + SerpApi keys server-side
+  const gk = $("#apiKey").value.trim();
+  const sk = $("#serpKey").value.trim();
+  if (gk) keys.google = gk;
+  if (sk) keys.serp = sk;
+  try {
+    await api("/api/assistant/config", {save: {keys}});
+    $("#apiKeysMsg").innerHTML = '<div class="msg ok">API keys saved.</div>';
+  } catch(e){
+    $("#apiKeysMsg").innerHTML = `<div class="msg err">${esc(e.message)}</div>`;
+  }
+};
+
+$("#testKey").onclick = async () => {
+  const b = $("#testKey"); b.disabled = true; b.innerHTML = '<span class="spin"></span> Testing…';
+  try { const j = await api("/api/test-key", {apiKey: $("#apiKey").value.trim()}); $("#testMsg").innerHTML = `<div class="msg ok">${esc(j.message)}</div>`; }
+  catch(err){ $("#testMsg").innerHTML = `<div class="msg err">${esc(err.message)}</div>`; }
+  b.disabled = false; b.textContent = "Test Google key";
+};
+function srcNote(){
+  const src = document.querySelector('input[name=src]:checked').value;
+  $("#deepWrap").hidden = src !== "google";
+  $("#srcNote").textContent = src === "google"
+    ? "Google Maps shows whether each business has a website, so 'no website' results are reliable. Deep search splits the city into areas to find more businesses (uses more API calls)."
+    : src === "serpapi"
+    ? "Same Google Maps data, fetched through SerpApi. Add your SerpApi key in Settings. Each page of 20 results uses one SerpApi search."
+    : "Free, no key. Pick a type from the suggestions and use a city (not a whole country). OpenStreetMap often lacks website info, so 'no website' here means none listed. Use the Research links to double-check.";
+}
+document.querySelectorAll('input[name=src]').forEach(r => r.onchange = srcNote);
+srcNote();
+
+/* scoring */
+function siteState(l){
+  if (!l.website) return "no";
+  if (isSocial(l.website)) return "social";
+  if (l.audit && l.audit.score >= 20) return "weak";
+  return "yes";
+}
+function score(l){
+  let s = 0; const st = siteState(l);
+  if (st === "no") s += 50; else if (st === "social") s += 40; else if (st === "weak") s += 20 + Math.min(20, l.audit.score/3);
+  const rv = l.reviews || 0;
+  s += rv >= 100 ? 20 : rv >= 30 ? 15 : rv >= 10 ? 8 : 0;
+  if ((l.rating||0) >= 4.5) s += 10; else if ((l.rating||0) >= 4) s += 5;
+  if (l.phone) s += 10;
+  if (l.email) s += 10;
+  return Math.round(Math.min(100, s));
+}
+
+function researchLinks(l){
+  const q = encodeURIComponent(`${l.name} ${l.address||""}`.trim());
+  const n = encodeURIComponent(l.name);
+  return `<div class="acts">
+    <a class="btn sm" target="_blank" rel="noopener" href="https://www.google.com/search?q=${q}">Google</a>
+    ${l.mapsUrl ? `<a class="btn sm" target="_blank" rel="noopener" href="${esc(l.mapsUrl)}">Map</a>` : ""}
+    <a class="btn sm" target="_blank" rel="noopener" href="https://www.facebook.com/search/pages?q=${n}">Facebook</a>
+    <a class="btn sm" target="_blank" rel="noopener" href="https://www.google.com/search?q=${encodeURIComponent(l.name + ' site:instagram.com')}">Instagram</a>
+    <a class="btn sm" target="_blank" rel="noopener" href="https://www.google.com/search?q=${encodeURIComponent('"' + l.name + '" email')}">Email search</a>
+  </div>`;
+}
+function contactCell(l){
+  const d = digits(l.phone);
+  return `${l.phone ? `<div><a href="tel:${esc(l.phone.replace(/\s/g,""))}">${esc(l.phone)}</a></div>
+      <div class="acts" style="margin-top:3px"><a class="btn sm" target="_blank" rel="noopener" href="https://wa.me/${d}">WhatsApp</a></div>` : '<span class="sub">No phone listed</span>'}
+    ${l.email ? `<div style="margin-top:4px"><a href="mailto:${esc(l.email)}">${esc(l.email)}</a>${l.emailStatus ? ` <span class="tag ${l.emailStatus==="deliverable-domain"?"t-no":l.emailStatus==="invalid"?"t-yes":"t-weak"}">${{"deliverable-domain":"verified domain",invalid:"invalid",unknown:"unverified",guessed:"guessed"}[l.emailStatus]||esc(l.emailStatus)}</span>` : ""}</div>` : ""}
+    ${!l.email && l.guessedEmails && l.guessedEmails.length ? `<div class="sub" style="margin-top:4px">Try: ${esc(l.guessedEmails.slice(0,2).join(", "))} <span class="tag t-weak">guessed</span></div>` : ""}
+    ${l.contactPage ? `<div><a class="sub" target="_blank" rel="noopener" href="${esc(l.contactPage)}">Contact form ↗</a></div>` : ""}
+    ${l.emailsFound && l.emailsFound.length > 1 ? `<div class="sub">${esc(l.emailsFound.slice(1).join(", "))}</div>` : ""}
+    ${l.social ? `<div class="sub">${esc(l.social)}</div>` : ""}`;
+}
+function siteCell(l, withActions){
+  const st = siteState(l);
+  let h = st === "no" ? '<span class="tag t-no">No website</span>'
+        : st === "social" ? `<span class="tag t-no">Social page only</span><div class="sub">${esc(host(l.website))}</div>`
+        : `<span class="tag ${st==="weak"?"t-weak":"t-yes"}">${st==="weak"?"Weak site":"Has site"}</span>
+           <div><a class="sub" target="_blank" rel="noopener" href="${esc(/^https?:/i.test(l.website)?l.website:"http://"+l.website)}">${esc(host(l.website))}</a></div>`;
+  if (l.audit){
+    h += l.audit.issues.length ? `<ul class="issues">${l.audit.issues.map(i=>`<li>${esc(i)}</li>`).join("")}</ul>` : '<div class="sub">No obvious problems</div>';
+  }
+  if (withActions && l.website && !isSocial(l.website)){
+    h += `<div class="acts" style="margin-top:4px">
+      <button class="btn sm" data-act="email" data-id="${esc(l.id)}">Find email</button>
+      <button class="btn sm" data-act="audit" data-id="${esc(l.id)}">Check site</button></div>`;
+  }
+  return h;
+}
+
+/* search */
+$("#searchForm").onsubmit = async e => {
+  e.preventDefault();
+  const src = document.querySelector('input[name=src]:checked').value;
+  const type = $("#qType").value.trim(), loc = $("#qLoc").value.trim();
+  const btn = $("#searchBtn");
+  btn.disabled = true; btn.innerHTML = '<span class="spin"></span> Searching…';
+  $("#findMsg").innerHTML = "";
+  try {
+    const body = src === "google"
+      ? {source:"google", query:type, location:loc, apiKey:settings.apiKey, pages:settings.pages, deep:+$("#qDeep").value}
+      : src === "serpapi"
+      ? {source:"serpapi", query:type, location:loc, serpKey:settings.serpKey, pages:settings.pages}
+      : {source:"osm", category: categories.find(c => c.toLowerCase() === type.toLowerCase()) || type, location:loc};
+    const j = await api("/api/search", body);
+    results = j.leads.map(l => ({...l, emailsFound: l.email ? [l.email] : []}));
+    renderResults();
+    $("#resultsWrap").hidden = false;
+  } catch(err){
+    $("#findMsg").innerHTML = `<div class="msg err">${esc(err.message)}</div>`;
+  } finally {
+    btn.disabled = false; btn.textContent = "Search";
+  }
+};
+
+function shown(){
+  const f = $("#qFilter").value;
+  return results.filter(l => {
+    const st = siteState(l);
+    if (f === "no") return st === "no" || st === "social";
+    if (f === "weak") return st !== "yes";
+    return true;
+  });
+}
+$("#qFilter").onchange = () => results.length && renderResults();
+
+function prioTag(l){
+  const idb = window.LFIdentity ? window.LFIdentity.badge(l) : "";
+  const idBtn = !l.identity && window.LFIdentity ? `<div style="margin-top:4px"><button class="btn sm" data-idopen="${esc(l.id)}">Identity</button></div>` : "";
+  return prioOnly(l) + idb + idBtn;
+}
+function prioOnly(l){
+  if (!l.priority) return '<span class="sub">Not analyzed</span>';
+  const c = l.priority==="Hot" ? "t-no" : l.priority==="Warm" ? "t-weak" : "t-yes";
+  return `<span class="tag ${c}" style="font-weight:600">${l.priority}</span>`;
+}
+function renderResults(){
+  const rows = shown().map(l => ({...l, _score: score(l)}));
+  const PR = {Hot:3, Warm:2, Low:1};
+  const val = (l,k) => k==="priority" ? (PR[l.priority]||0)*1000 + l._score : k==="score" ? l._score : k==="reviews" ? (l.reviews||0) : k==="site" ? siteState(l) : (l[k]||"").toLowerCase();
+  rows.sort((a,b) => (val(a,sortKey) > val(b,sortKey) ? 1 : val(a,sortKey) < val(b,sortKey) ? -1 : 0) * sortDir);
+  const noSite = results.filter(l => ["no","social"].includes(siteState(l))).length;
+  $("#resultsInfo").textContent = `${results.length} businesses found, ${noSite} without a real website. Showing ${rows.length}.`;
+  const inList = new Set(myList.map(l => l.id));
+  $("#results").innerHTML = rows.length ? rows.map(l => `<tr>
+    <td>${prioTag(l)}<div style="margin-top:4px"><button class="btn sm" data-act="analyze" data-id="${esc(l.id)}">${l.analysis ? "View report" : "Analyze"}</button></div></td>
+    <td><span class="score ${l._score>=70?"hot":""}">${l._score}</span></td>
+    <td><div class="nm">${esc(l.name)}</div><div class="sub">${esc(l.category)}</div><div class="sub">${esc(l.address)}</div></td>
+    <td>${contactCell(l)}</td>
+    <td>${siteCell(l, true)}</td>
+    <td>${l.rating ? `${l.rating}★` : ""}<div class="sub">${l.reviews ? l.reviews + " reviews" : (String(l.source).startsWith("Google") ? "No reviews" : "n/a")}</div></td>
+    <td>${researchLinks(l)}</td>
+    <td>${inList.has(l.id) ? '<span class="sub">In list</span>' : `<button class="btn sm primary" data-act="add" data-id="${esc(l.id)}">Add</button>`}</td>
+  </tr>`).join("") : `<tr><td colspan="8" class="empty">No matches with this filter. Try "All businesses" or another area.</td></tr>`;
+}
+document.querySelectorAll("th[data-sort]").forEach(th => th.onclick = () => {
+  const k = th.dataset.sort; sortDir = sortKey === k ? -sortDir : (k==="name"?1:-1); sortKey = k; renderResults();
+});
+
+async function doEmail(l){
+  const j = await api("/api/emails", {url: l.website});
+  l.emailsFound = [...new Set([...(l.emailsFound||[]), ...j.emails])];
+  if (!l.email && l.emailsFound.length) l.email = l.emailsFound[0];
+  l.emailChecked = true;
+}
+async function doAudit(l){ l.audit = await api("/api/audit", {url: l.website}); }
+
+$("#results").onclick = async e => {
+  const b = e.target.closest("button[data-act]"); if (!b) return;
+  const l = results.find(x => x.id === b.dataset.id); if (!l) return;
+  if (b.dataset.act === "add"){ addToList([l]); renderResults(); return; }
+  if (b.dataset.act === "analyze"){ window.LFReport.open(l, x => { saveLead(x); renderResults(); }); return; }
+  b.disabled = true; b.innerHTML = '<span class="spin"></span>';
+  try {
+    if (b.dataset.act === "email"){ await doEmail(l); if (!l.emailsFound.length) l.social = (l.social ? l.social + " · " : "") + "No email found on site"; }
+    else await doAudit(l);
+  } catch(err){ alert(err.message); }
+  syncToList(l); renderResults();
+};
+
+async function runBulk(btn, fn, filter){
+  const targets = shown().filter(filter);
+  if (!targets.length){ alert("Nothing to check in the current view. Switch Show to 'All businesses' to include businesses with websites."); return; }
+  btn.disabled = true; const label = btn.textContent;
+  let done = 0;
+  const queue = [...targets];
+  const worker = async () => { while (queue.length){ const l = queue.shift(); try { await fn(l); } catch(e){} syncToList(l); done++; btn.textContent = `${done}/${targets.length}…`; } };
+  await Promise.all(Array.from({length: 5}, worker));
+  btn.disabled = false; btn.textContent = label; renderResults();
+}
+$("#bulkEmail").onclick = e => runBulk(e.target, doEmail, l => l.website && !isSocial(l.website) && !l.emailChecked);
+$("#bulkAudit").onclick = e => runBulk(e.target, doAudit, l => l.website && !isSocial(l.website) && !l.audit);
+$("#addAll").onclick = () => { addToList(shown()); renderResults(); };
+$("#exportResults").onclick = () => downloadCsv("leads.csv", shown().map(l => ({...l, score: score(l)})));
+
+/* list */
+function saveList(){ store.set("lf-list", myList); $("#listCount").textContent = myList.length ? `(${myList.length})` : ""; }
+function addToList(arr){
+  const have = new Set(myList.map(l => l.id)); let n = 0;
+  arr.forEach(l => { if (!have.has(l.id)) { myList.unshift({...l, stage:"New", notes:"", followUp:"", added:new Date().toISOString().slice(0,10)}); n++; } });
+  saveList();
+  if (n && window.LF && window.LF.log) window.LF.log("newLeads", n);
+  $("#findMsg").innerHTML = `<div class="msg ok">Added ${n} business${n===1?"":"es"} to My list.</div>`;
+}
+function syncToList(l){
+  const m = myList.find(x => x.id === l.id);
+  if (m){ Object.assign(m, {email:l.email, emailsFound:l.emailsFound, audit:l.audit, social:l.social}); saveList(); }
+}
+$("#listStage").innerHTML = '<option value="">All stages</option>' + STAGES.map(s => `<option>${s}</option>`).join("");
+$("#listSearch").oninput = renderList; $("#listStage").onchange = renderList;
+
+function renderList(){
+  const term = $("#listSearch").value.toLowerCase(), stage = $("#listStage").value;
+  const today = new Date().toISOString().slice(0,10);
+  const count = s => myList.filter(l => l.stage === s).length;
+  const due = myList.filter(l => l.followUp && l.followUp <= today && !["Won","Not interested"].includes(l.stage)).length;
+  $("#tally").innerHTML = `<div><b>${myList.length}</b><span>in list</span></div>
+    <div><b>${count("New")}</b><span>not contacted</span></div>
+    <div><b>${due}</b><span>follow-ups due</span></div>
+    <div><b>${count("Interested")+count("Proposal sent")}</b><span>warm</span></div>
+    <div><b>${count("Won")}</b><span>won</span></div>`;
+  const rows = myList.filter(l => (!stage || l.stage === stage) &&
+    (!term || `${l.name} ${l.address} ${l.phone} ${l.email} ${l.category}`.toLowerCase().includes(term)));
+  $("#listBody").innerHTML = rows.length ? rows.map(l => `<tr data-id="${esc(l.id)}">
+    <td><div class="nm">${esc(l.name)}</div>${l.ownerName ? `<div class="sub">👤 ${esc(l.ownerName)}</div>` : ""}<div class="sub">${esc(l.category)}</div><div class="sub">${esc(l.address)}</div>
+      <div style="margin-top:4px">${researchLinks(l)}</div></td>
+    <td>${prioTag(l)}<div style="margin-top:4px"><button class="btn sm" data-analyze="1">${l.analysis ? "View report" : "Analyze"}</button></div></td>
+    <td>${contactCell(l)}</td>
+    <td>${siteCell(l, false)}</td>
+    <td><select data-f="stage">${STAGES.map(s => `<option${s===l.stage?" selected":""}>${s}</option>`).join("")}</select></td>
+    <td><input type="date" data-f="followUp" value="${esc(l.followUp)}" style="${l.followUp && l.followUp<=today && !["Won","Not interested"].includes(l.stage) ? "border-color:var(--warn)" : ""}"></td>
+    <td><textarea data-f="notes" placeholder="Owner, price quoted…">${esc(l.notes)}</textarea></td>
+    <td><button class="btn sm" data-del="1">Remove</button></td>
+  </tr>`).join("") : `<tr><td colspan="8" class="empty">Your list is empty. Search for leads and press Add, or import a CSV.</td></tr>`;
+}
+$("#listBody").onchange = e => {
+  const f = e.target.dataset.f; if (!f) return;
+  const l = myList.find(x => x.id === e.target.closest("tr").dataset.id);
+  l[f] = e.target.value; saveList(); if (f !== "notes") renderList();
+};
+$("#listBody").onclick = e => {
+  if (e.target.dataset.analyze){
+    const l = myList.find(x => x.id === e.target.closest("tr").dataset.id);
+    if (l.source === "Import"){ alert("Imported businesses have no map location. Search for them in Find leads to analyze."); return; }
+    window.LFReport.open(l, x => { saveLead(x); renderList(); }); return;
+  }
+  if (!e.target.dataset.del) return;
+  const id = e.target.closest("tr").dataset.id;
+  myList = myList.filter(l => l.id !== id); saveList(); renderList();
+};
+$("#clearList").onclick = () => { if (confirm("Remove every business from your list?")) { myList = []; saveList(); renderList(); } };
+$("#exportList").onclick = () => downloadCsv("my-leads.csv", myList);
+
+/* csv */
+const COLS = [["name","Name"],["ownerName","Owner"],["category","Type"],["address","Address"],["phone","Phone"],["email","Email"],["website","Website"],
+  ["social","Social"],["rating","Rating"],["reviews","Reviews"],["score","Score"],["priority","Priority"],["stage","Stage"],["followUp","Follow-up"],["notes","Notes"],["mapsUrl","Map link"]];
+function downloadCsv(name, rows){
+  const q = v => `"${String(v ?? "").replace(/"/g,'""')}"`;
+  const lines = [COLS.map(c => c[1]).join(",")].concat(rows.map(r => COLS.map(([k]) =>
+    q(k==="score" ? (r.score ?? score(r)) : k==="website" && !r.website ? "NONE" : r[k])).join(",")));
+  const blob = new Blob(["\ufeff" + lines.join("\r\n")], {type:"text/csv"});
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+function parseCsv(text){
+  const out = []; let row = [], cur = "", q = false;
+  for (let i = 0; i < text.length; i++){
+    const c = text[i];
+    if (q){ if (c === '"'){ if (text[i+1] === '"'){ cur += '"'; i++; } else q = false; } else cur += c; }
+    else if (c === '"') q = true;
+    else if (c === ","){ row.push(cur); cur = ""; }
+    else if (c === "\n" || c === "\r"){ if (c === "\r" && text[i+1] === "\n") i++; row.push(cur); out.push(row); row = []; cur = ""; }
+    else cur += c;
+  }
+  if (cur || row.length){ row.push(cur); out.push(row); }
+  return out.filter(r => r.some(x => x.trim()));
+}
+$("#importCsv").onchange = async e => {
+  const f = e.target.files[0]; if (!f) return;
+  const rows = parseCsv((await f.text()).replace(/^\ufeff/, ""));
+  const head = rows.shift().map(h => h.trim().toLowerCase());
+  const idx = names => head.findIndex(h => names.includes(h));
+  const map = {name:idx(["name","business"]), category:idx(["type","category"]), address:idx(["address","area"]),
+    phone:idx(["phone","phone number"]), email:idx(["email"]), website:idx(["website"]), stage:idx(["stage"]), notes:idx(["notes"])};
+  if (map.name < 0){ alert("The CSV needs a 'Name' column."); return; }
+  const have = new Set(myList.map(l => l.id)); let n = 0;
+  rows.forEach((r, i) => {
+    const g = k => map[k] >= 0 ? (r[map[k]] || "").trim() : "";
+    let site = g("website"); if (/^(none|no website|not checked|has website)$/i.test(site)) site = "";
+    const id = "csv:" + (g("name") + g("phone")).toLowerCase();
+    if (!g("name") || have.has(id)) return;
+    myList.push({id, source:"Import", name:g("name"), category:g("category"), address:g("address"), phone:g("phone"),
+      email:g("email"), website:site, stage: STAGES.includes(g("stage")) ? g("stage") : "New", notes:g("notes"), followUp:"", reviews:0});
+    have.add(id); n++;
+  });
+  saveList(); renderList(); e.target.value = "";
+  alert(`Imported ${n} businesses.`);
+};
+
+/* hooks for the prospect report */
+const SRC_KEY = s => String(s).startsWith("Google (") ? "serpapi" : String(s).startsWith("Google") ? "google" : "osm";
+window.LF = {
+  api, settings: () => settings, sourceOf: l => SRC_KEY(l.source),
+  inList: l => myList.some(x => x.id === l.id),
+  addToList: l => { addToList([l]); renderResults(); },
+  getList: () => myList,
+  getShown: () => shown(),
+  addLeads: (leads) => {
+    const added = [];
+    (leads || []).forEach(l => { if (!myList.some(x => x.id === l.id)){ myList.push({...l, stage:"New", addedAt: new Date().toISOString().slice(0,10)}); added.push(l); } });
+    if (added.length){ saveList(); if (!document.getElementById("tab-list").hidden) renderList(); }
+    return added.length;
+  },
+  updateLead: (id, patch) => {
+    const l = myList.find(x => x.id === id);
+    if (l){ Object.assign(l, patch); saveList(); }
+  },
+  saveLead: (l) => saveLead(l),
+  refresh: () => { renderList(); renderResults(); },
+  showTab: (name) => showTab(name),
+  bindTab: (b, cb) => bindTab(b, cb),
+};
+function saveLead(l){
+  const m = myList.find(x => x.id === l.id);
+  const F = ["identity","ownerInfo","ownerName","ownerLocked","contactName","pkgSelected","proposalIntro","proposalAt","analysis","priority","manualPresence","aiNotes","email","emailsFound","guessedEmails","emailStatus","contactPage","enriched","audit","social"];
+  const pick = o => Object.fromEntries(F.filter(k => o[k] !== undefined).map(k => [k, o[k]]));
+  if (m && m !== l){ Object.assign(m, pick(l)); }
+  const r = results.find(x => x.id === l.id);
+  if (r && r !== l){ Object.assign(r, pick(l)); }
+  saveList();
+}
+window.LF.saveLead = saveLead;
+window.LF.bindTab = bindTab;
+window.LF.showTab = showTab;
+window.LF.getList = () => myList;
+window.LF.updateLead = (id, patch) => { const l = myList.find(x => x.id === id); if (l){ Object.assign(l, patch); saveList(); } };
+window.LF.addLeads = arr => { addToList(arr); renderResults(); };
+window.LF.getShown = () => shown();
+window.LF.getResults = () => results;
+window.LF.refresh = () => { if (results.length) renderResults(); if (!$("#tab-list").hidden) renderList(); };
+window.LF.startSearch = (type, loc) => {
+  $("#qType").value = type; $("#qLoc").value = loc; $("#qFilter").value = "no";
+  const s = settings.apiKey ? "google" : settings.serpKey ? "serpapi" : "google";
+  document.querySelector(`input[name=src][value=${s}]`).checked = true; srcNote();
+  showTab("find"); $("#searchBtn").click();
+};
+
+$("#bestTargets").onclick = async e => {
+  const btn = e.target;
+  const pick = shown().map(l => ({l, s: score(l)})).sort((a,b) => b.s - a.s).slice(0, +$("#bestN").value).map(x => x.l).filter(l => !l.analysis);
+  if (!pick.length){ alert("The top leads are already analyzed. Sort by Priority."); return; }
+  btn.disabled = true; let done = 0;
+  const q = [...pick];
+  const worker = async () => { while (q.length){ const l = q.shift();
+    try { l.analysis = await api("/api/analyze", {lead:l, source:SRC_KEY(l.source), apiKey:settings.apiKey, serpKey:settings.serpKey, radius:+(settings.radius||3000)});
+          l.priority = window.LFReport.insights(l, l.analysis).priority; saveLead(l); } catch(err){ l.priorityError = err.message; }
+    done++; btn.textContent = `Analyzing ${done}/${pick.length}…`; } };
+  await Promise.all([worker(), worker()]);
+  btn.disabled = false; btn.textContent = "Find best targets";
+  sortKey = "priority"; sortDir = -1; renderResults();
+};
+
+saveList();
+})();
+</script>
+<script src="/static/report.js"></script>
+<script src="/static/niche.js"></script>
+<script src="/static/outreach.js"></script>
+<script src="/static/social.js"></script>
+<script src="/static/assistant.js"></script>
+<script src="/static/identity.js"></script>
+<script src="/static/hiring.js"></script>
+<script src="/static/jobsearch.js"></script>
+<script src="/static/career.js"></script>
+<script src="/static/dashboard.js"></script>
+<script src="/static/integrations.js"></script>
+<script src="/static/opportunities.js"></script>
+<script src="/static/pipeline.js"></script>
+<script src="/static/dorking.js"></script>
+</body>
+</html>
