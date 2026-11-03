@@ -66,7 +66,10 @@ def load(n, default):
         if database is not None:
             doc = database.app_state.find_one({"_id": str(n)})
             if doc is not None:
-                return doc.get("value", default)
+                value = doc.get("value", default)
+                if n == "config" and isinstance(value, dict):
+                    value = {**value, **_local_config_secrets(default)}
+                return value
     except Exception as exc:
         print("  [storage] MongoDB read failed; using JSON:", exc)
     try:
@@ -78,7 +81,7 @@ def load(n, default):
             try:
                 database.app_state.update_one(
                     {"_id": str(n)},
-                    {"$setOnInsert": {"value": value, "updatedAt": time.time()}},
+                    {"$setOnInsert": {"value": _cloud_value(n, value), "updatedAt": time.time()}},
                     upsert=True,
                 )
             except Exception as exc:
@@ -99,7 +102,7 @@ def save(n, obj):
             if database is not None:
                 database.app_state.replace_one(
                     {"_id": str(n)},
-                    {"_id": str(n), "value": obj, "updatedAt": time.time()},
+                    {"_id": str(n), "value": _cloud_value(n, obj), "updatedAt": time.time()},
                     upsert=True,
                 )
         except Exception as exc:
