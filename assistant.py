@@ -1,32 +1,113 @@
 """
-Daily assistant back end for LeadFinder:
-  * local JSON store in ./data (config, inbox, seen ids, usage)
-  * free-quota guard for Google Places / SerpApi
-  * autopilot: runs your saved searches once a day and collects NEW leads into an inbox
+Daily assistant backend for LeadFinder.
+Local JSON remains the fallback; when MONGODB_URI is configured, state is
+also read from and written to MongoDB Atlas. This app is intentionally local.
 """
 import json, os, threading, time, traceback
 import leadfinder as LF
 
-DATA = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
+BASE = os.path.dirname(os.path.abspath(__file__))
+DATA = os.path.join(BASE, "data")
 os.makedirs(DATA, exist_ok=True)
 _lock = threading.RLock()
 state = {"running": False, "log": [], "progress": ""}
 
-def _path(n): return os.path.join(DATA, n + ".json")
-def load(n, default):
+# Load a simple local .env file for desktop use. Real environment variables win.
+def _load_dotenv():
+    path = os.path.join(BASE, ".env")
     try:
-        with open(_path(n), encoding="utf-8") as f: return json.load(f)
+        with open(path, encoding="utf-8") as f:
+            for raw in f:
+                line = raw.strip()
+                if not line or line.startswith("#") or "=" not in line:
+                    continue
+                key, value = line.split("=", 1)
+                key, value = key.strip(), value.strip().strip('"').strip("'")
+                if key and key not in os.environ:
+                    os.environ[key] = value
+    except FileNotFoundError:
+        pass
+
+_load_dotenv()
+
+_mongo_client = None
+_mongo_db = None
+_mongo_error_logged = False
+
+def _mongo():
+    """Return the optional Atlas database; never make MongoDB mandatory."""
+    global _mongo_client, _mongo_db, _mongo_error_logged
+    uri = os.environ.get("MONGODB_URI", "").strip()
+    if not uri:
+        return None
+    if _mongo_db is not None:
+        return _mongo_db
+    try:
+        from pymongo import MongoClient
+        _mongo_client = MongoClient(uri, serverSelectionTimeoutMS=3500,
+                                   connectTimeoutMS=3500, appname="LeadFinder")
+        _mongo_client.admin.command("ping")
+        name = os.environ.get("MONGODB_DATABASE", "leadfinder").strip() or "leadfinder"
+        _mongo_db = _mongo_client[name]
+        return _mongo_db
+    except Exception as exc:
+        if not _mongo_error_logged:
+            print("  [storage] MongoDB unavailable; using local JSON:", exc)
+            _mongo_error_logged = True
+        return None
+
+def _path(n):
+    return os.path.join(DATA, n + ".json")
+
+def load(n, default):
+    """Read Atlas first, then fall back to the existing local JSON file."""
+    try:
+        database = _mongo()
+        if database is not None:
+            doc = database.app_state.find_one({"_id": str(n)})
+            if doc is not None:
+                return doc.get("value", default)
+    except Exception as exc:
+        print("  [storage] MongoDB read failed; using JSON:", exc)
+    try:
+        with open(_path(n), encoding="utf-8") as f:
+            value = json.load(f)
+        # One-time migration: seed Atlas from existing local state.
+        database = _mongo()
+        if database is not None:
+            try:
+                database.app_state.update_one(
+                    {"_id": str(n)},
+                    {"$setOnInsert": {"value": value, "updatedAt": time.time()}},
+                    upsert=True,
+                )
+            except Exception as exc:
+                print("  [storage] Could not migrate local state to MongoDB:", exc)
+        return value
     except Exception:
         return default
+
 def save(n, obj):
+    """Write local JSON first, then mirror to Atlas when it is reachable."""
     with _lock:
         tmp = _path(n) + ".tmp"
-        with open(tmp, "w", encoding="utf-8") as f: json.dump(obj, f, ensure_ascii=False, indent=1)
+        with open(tmp, "w", encoding="utf-8") as f:
+            json.dump(obj, f, ensure_ascii=False, indent=1)
         os.replace(tmp, _path(n))
+        try:
+            database = _mongo()
+            if database is not None:
+                database.app_state.replace_one(
+                    {"_id": str(n)},
+                    {"_id": str(n), "value": obj, "updatedAt": time.time()},
+                    upsert=True,
+                )
+        except Exception as exc:
+            print("  [storage] MongoDB write failed; local JSON is safe:", exc)
 
 DEFAULT_CFG = {
     "jobs": [], "runHour": 8, "autopilot": True, "lastRun": "",
-    "caps": {"google": 900, "serpapi": 90},   # monthly safety caps (Google Enterprise free ≈1,000; set yours)
+    "caps": {"google": 900, "serpapi": 90},
     "keys": {"google": "", "serp": "", "hunter": "", "cse": "", "cseId": "",
              "pagespeed": "", "ch": "", "sheetsCredsPath": ""},
     "pool": [],
@@ -42,7 +123,6 @@ def log(msg):
     state["log"] = ([line] + state["log"])[:60]
     print("  [assistant] " + msg)
 
-# ---------------------------------------------------------------- quota guard
 def usage():
     u = load("usage", {})
     m = time.strftime("%Y-%m")
@@ -59,9 +139,8 @@ def spend(kind, n=1):
         u[kind] = u.get(kind, 0) + n
         save("usage", u)
 
-# ---------------------------------------------------------------- inbox
-def inbox():  return load("inbox", [])
-def seen():   return set(load("seen", []))
+def inbox(): return load("inbox", [])
+def seen(): return set(load("seen", []))
 
 def resolve(ids, extra_seen=()):
     with _lock:
@@ -74,7 +153,6 @@ def mark_seen(ids):
     with _lock:
         save("seen", sorted(seen() | set(ids)))
 
-# ---------------------------------------------------------------- autopilot
 def _no_site(l):
     w = (l.get("website") or "").lower()
     return not w or any(s in w for s in ("facebook.com", "instagram.com", "business.site", "linktr.ee"))
@@ -121,7 +199,7 @@ def run_jobs(only=None):
                     l["foundAt"] = stamp; l["job"] = f"{j['niche']} in {j['city']}"
                 with _lock:
                     save("inbox", fresh + inbox())
-                    mark_seen([l["id"] for l in leads])   # never show the same business twice
+                    mark_seen([l["id"] for l in leads])
                 total_new += len(fresh)
                 log(f"{j['niche']} in {j['city']}: {len(leads)} checked, {len(fresh)} new")
             except Exception as ex:
@@ -144,7 +222,7 @@ def _scheduler():
                 run_jobs()
             if c.get("autopilot") and time.localtime().tm_hour >= int(c.get("runHour", 8)):
                 import hiring
-                hiring.daily()          # one hiring-posts check per day (it skips itself if done)
+                hiring.daily()
         except Exception:
             log("Scheduler error: " + traceback.format_exc(limit=1))
         time.sleep(300)
@@ -152,7 +230,6 @@ def _scheduler():
 def start():
     threading.Thread(target=_scheduler, daemon=True).start()
 
-# ---------------------------------------------------------------- API
 def handle(path, req):
     import ai_pool, contacts
     c = cfg()
@@ -163,7 +240,7 @@ def handle(path, req):
                 if k in new: c[k] = new[k]
             if "keys" in new: c["keys"].update({k: v for k, v in new["keys"].items() if v is not None})
             if str(c["keys"].get("hunter", "")).startswith("AIza"):
-                c["keys"]["hunter"] = ""   # a Google key pasted into the Hunter field by mistake
+                c["keys"]["hunter"] = ""
             save("config", c)
         u = usage()
         return {"config": c, "usage": u, "providers": ai_pool.PROVIDERS}
@@ -174,27 +251,19 @@ def handle(path, req):
     if path == "/api/assistant/run":
         threading.Thread(target=lambda: _safe_run(req.get("only")), daemon=True).start()
         return {"started": True}
-    if path == "/api/assistant/inbox":
-        return {"inbox": inbox()}
+    if path == "/api/assistant/inbox": return {"inbox": inbox()}
     if path == "/api/assistant/resolve":
-        resolve(req.get("ids", []), req.get("seen", []))
-        return {"ok": True}
+        resolve(req.get("ids", []), req.get("seen", [])); return {"ok": True}
     if path == "/api/assistant/seen":
-        mark_seen(req.get("ids", []))
-        return {"ok": True}
+        mark_seen(req.get("ids", [])); return {"ok": True}
     if path == "/api/pool/complete":
         return ai_pool.complete(req.get("prompt", ""), c.get("pool"), req.get("system") or ai_pool.SYSTEM,
                                 int(req.get("maxTokens", 900)))
-    if path == "/api/pool/test":
-        return ai_pool.test(req.get("cfg", {}))
-    if path == "/api/pool/models":
-        return {"models": ai_pool.list_models(req.get("cfg", {}))}
-    if path == "/api/contacts/enrich":
-        return contacts.enrich(req.get("website", ""))
-    if path == "/api/contacts/verify":
-        return {"results": [contacts.verify(e) for e in req.get("emails", [])[:50]]}
-    if path == "/api/contacts/hunter":
-        return contacts.hunter(req.get("domain", ""), c["keys"].get("hunter"))
+    if path == "/api/pool/test": return ai_pool.test(req.get("cfg", {}))
+    if path == "/api/pool/models": return {"models": ai_pool.list_models(req.get("cfg", {}))}
+    if path == "/api/contacts/enrich": return contacts.enrich(req.get("website", ""))
+    if path == "/api/contacts/verify": return {"results": [contacts.verify(e) for e in req.get("emails", [])[:50]]}
+    if path == "/api/contacts/hunter": return contacts.hunter(req.get("domain", ""), c["keys"].get("hunter"))
     raise RuntimeError("Unknown endpoint")
 
 def _safe_run(only):

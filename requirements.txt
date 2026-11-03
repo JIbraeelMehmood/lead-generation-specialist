@@ -1,0 +1,3 @@
+# Optional Atlas persistence for the local LeadFinder desktop app.
+# Without this package or MONGODB_URI, the existing JSON storage remains active.
+pymongo[srv]>=4.6,<5
