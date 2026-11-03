@@ -59,6 +59,23 @@ def _mongo():
 def _path(n):
     return os.path.join(DATA, n + ".json")
 
+def _cloud_value(name, value):
+    # API credentials and provider pool settings stay on this computer.
+    if name == "config" and isinstance(value, dict):
+        return {k: value[k] for k in ("jobs", "runHour", "autopilot", "lastRun", "caps") if k in value}
+    return value
+
+def _local_config_secrets(default):
+    try:
+        with open(_path("config"), encoding="utf-8") as f:
+            local = json.load(f)
+        return {
+            "keys": local.get("keys", default.get("keys", {})),
+            "pool": local.get("pool", default.get("pool", [])),
+        }
+    except Exception:
+        return {"keys": default.get("keys", {}), "pool": default.get("pool", [])}
+
 def load(n, default):
     """Read Atlas first, then fall back to the existing local JSON file."""
     try:
