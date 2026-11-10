@@ -1,0 +1,27 @@
+{
+ "jobs": [
+  {
+   "niche": "dentist",
+   "city": "new york Albany USA",
+   "source": "google",
+   "filter": "all",
+   "minReviews": 1,
+   "pages": 1,
+   "id": "mvwfejsc",
+   "enabled": true
+  }
+ ],
+ "runHour": 8,
+ "autopilot": true,
+ "lastRun": "2026-11-02",
+ "caps": {
+  "google": 900,
+  "serpapi": 90
+ },
+ "keys": {
+  "google": "AIzaSyDR-shroBZDLqPAEHhk6QsDCJyIQE_x4NE",
+  "serp": "",
+  "hunter": ""
+ },
+ "pool": []
+}
