@@ -3,295 +3,1702 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>LeadFinder</title>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<title>LeadFinder — AI Lead Intelligence Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
 <style>
+/* ═══════════════════════════════════════════════════════════════════
+   DESIGN SYSTEM — LeadFinder v2 Dark Sidebar Layout
+═══════════════════════════════════════════════════════════════════ */
+/* ═══ DARK THEME (default) ═══ */
 :root{
-  --bg:#EEF3F1; --panel:#FFFFFF; --ink:#16302B; --muted:#5B6F6A; --line:#D3DEDA;
-  --go:#0B7A55; --go-soft:#DDF1E8; --warn:#9A5B00; --warn-soft:#FBEBD2;
-  --stop:#8A3B3B; --stop-soft:#F4E1E1; --chip:#E3EBE8;
-  --display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
-  --body:"Figtree","Segoe UI",system-ui,sans-serif;
+  /* Core palette — deep dark with refined depth */
+  --bg:            #0B0F16;
+  --surface:       #141923;
+  --surface-2:     #1A1F2B;
+  --surface-3:     #222834;
+  --border:        #2D3340;
+  --border-hover:  #444B5A;
+
+  /* Text */
+  --ink:           #E8ECF2;
+  --ink-2:         #9BA3AF;
+  --ink-3:         #6B7280;
+
+  /* Brand accent — vibrant teal-cyan gradient anchor */
+  --accent:        #00D9A6;
+  --accent-dim:    #00D9A61C;
+  --accent-hover:  #00F5B8;
+  --accent-btn:    #00C49A;
+  --accent-text:   #0B0F16;
+  --accent-2:      #6C8EEF;
+
+  /* Status */
+  --green:         #3FD680;
+  --green-bg:      #3FD68014;
+  --yellow:        #E8B339;
+  --yellow-bg:     #E8B33914;
+  --red:           #FF5D5D;
+  --red-bg:        #FF5D5D14;
+  --blue:          #5B9BF5;
+  --blue-bg:       #5B9BF514;
+  --purple:        #C084FC;
+  --purple-bg:     #C084FC14;
+  --orange:        #F0935C;
+  --orange-bg:     #F0935C14;
+
+  /* Sidebar */
+  --sidebar-w:     248px;
+  --sidebar-bg:    #0B0F16;
+  --sidebar-border: #1A1F2B;
+
+  /* Shadows & depth */
+  --shadow-sm:     0 1px 3px rgba(0,0,0,0.4);
+  --shadow-md:     0 4px 12px rgba(0,0,0,0.35);
+  --shadow-lg:     0 8px 32px rgba(0,0,0,0.5);
+  --glow:          0 0 20px rgba(0,217,166,0.15);
+
+  /* Radius */
+  --r-sm:  6px;
+  --r-md:  10px;
+  --r-lg:  14px;
+  --r-xl:  18px;
+  --r-full: 99px;
+
+  /* Typography */
+  --font-display: "Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif;
+  --font-body:    "Inter", "Segoe UI", system-ui, sans-serif;
+
+  /* Transitions */
+  --t-fast: 0.15s ease;
+  --t-med:  0.25s ease;
+  --t-slow: 0.4s ease;
 }
-@media (prefers-color-scheme: dark){
-  :root{--bg:#0F1A18;--panel:#16241F;--ink:#E4EFEB;--muted:#9DB2AC;--line:#2A3C37;
-  --go:#4CC99B;--go-soft:#173A2E;--warn:#F0B35A;--warn-soft:#3A2C16;--stop:#E59A9A;--stop-soft:#3A2020;--chip:#20322D}
+
+/* ═══ LIGHT THEME ═══ */
+:root[data-theme="light"]{
+  --bg:            #F7F8FA;
+  --surface:       #FFFFFF;
+  --surface-2:     #F1F4F8;
+  --surface-3:     #E8ECF1;
+  --border:        #E0E4EA;
+  --border-hover:  #C5CBD6;
+
+  --ink:           #1A2332;
+  --ink-2:         #5A6573;
+  --ink-3:         #8B95A4;
+
+  --accent:        #00B894;
+  --accent-dim:    #00B89418;
+  --accent-hover:  #00A07F;
+  --accent-btn:    #00B894;
+  --accent-text:   #FFFFFF;
+  --accent-2:      #4F7CF5;
+
+  --green:         #16A34A;
+  --green-bg:      #16A34A12;
+  --yellow:        #CA8A04;
+  --yellow-bg:     #CA8A0412;
+  --red:           #DC2626;
+  --red-bg:        #DC262612;
+  --blue:          #2563EB;
+  --blue-bg:       #2563EB12;
+  --purple:        #9333EA;
+  --purple-bg:     #9333EA12;
+  --orange:        #EA580C;
+  --orange-bg:     #EA580C12;
+
+  --sidebar-bg:    #FFFFFF;
+  --sidebar-border: #E0E4EA;
+
+  --shadow-sm:     0 1px 3px rgba(0,0,0,0.08);
+  --shadow-md:     0 4px 12px rgba(0,0,0,0.1);
+  --shadow-lg:     0 8px 32px rgba(0,0,0,0.12);
+  --glow:          0 0 20px rgba(0,184,148,0.12);
 }
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5}
-.wrap{max-width:1180px;margin:0 auto;padding:22px 18px 70px}
-header{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:12px;margin-bottom:18px}
-h1{font-family:var(--display);font-size:clamp(28px,4vw,40px);margin:0;letter-spacing:-.02em;line-height:1}
-h2{font-family:var(--display);font-size:22px;margin:0 0 10px}
-h3{font-family:var(--display);font-size:17px;margin:18px 0 6px}
-nav{display:flex;flex-wrap:wrap;gap:4px;background:var(--chip);padding:4px;border-radius:10px}
-nav button{border:0;background:none;padding:7px 14px;border-radius:7px;font:inherit;color:var(--ink);cursor:pointer}
-nav button[aria-selected="true"]{background:var(--panel);font-weight:600}
-.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:14px}
-label{display:block;font-size:13px;color:var(--muted);margin-bottom:3px}
-input,select,textarea{font:inherit;color:inherit;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%}
-.grid{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));align-items:end}
-.btn{font:inherit;font-size:14px;border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:8px;padding:8px 12px;cursor:pointer;text-decoration:none;white-space:nowrap;display:inline-block}
-.btn.sm{font-size:12.5px;padding:4px 8px}
-.btn.primary{background:var(--go);border-color:var(--go);color:#fff}
-.btn:disabled{opacity:.5;cursor:default}
-:focus-visible{outline:2px solid var(--go);outline-offset:2px}
-.seg{display:flex;gap:6px;flex-wrap:wrap}
-.seg label{display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:8px;padding:7px 10px;cursor:pointer;color:var(--ink);font-size:14px;margin:0}
-.seg input{width:auto}
-.note{font-size:13px;color:var(--muted);margin:8px 0 0}
-.msg{padding:10px 12px;border-radius:8px;margin:10px 0;font-size:14px}
-.msg.err{background:var(--stop-soft);color:var(--stop)}
-.msg.ok{background:var(--go-soft);color:var(--go)}
-.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0}
-.toolbar .grow{flex:1}
-.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
-table{border-collapse:collapse;width:100%;min-width:900px}
-th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top;font-size:14px}
-th{font-size:12.5px;color:var(--muted);font-weight:600;background:var(--panel);position:sticky;top:0;cursor:pointer;user-select:none}
-tr:last-child td{border-bottom:0}
-.nm{font-weight:600}
-.sub{font-size:12.5px;color:var(--muted)}
-.tag{display:inline-block;font-size:12px;padding:2px 8px;border-radius:999px;white-space:nowrap}
-.t-no{background:var(--go-soft);color:var(--go)}
-.t-yes{background:var(--chip);color:var(--muted)}
-.t-weak{background:var(--warn-soft);color:var(--warn)}
-.score{font-family:var(--display);font-weight:700;font-size:18px}
-.hot{color:var(--go)}
-.acts{display:flex;flex-wrap:wrap;gap:4px}
-.issues{margin:4px 0 0;padding-left:16px;font-size:12.5px;color:var(--warn)}
-.tally{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px}
-.tally > div{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 14px}
-.tally b{font-family:var(--display);font-size:22px;display:block;line-height:1.1}
-.tally span{font-size:12.5px;color:var(--muted)}
-td select,td textarea{padding:4px 6px;font-size:13px}
-td textarea{min-width:180px;min-height:34px;resize:vertical}
-.guide{max-width:75ch}
-.guide p,.guide li{line-height:1.6}
-.guide ol,.guide ul{padding-left:20px}
-.tmpl{background:var(--bg);border-radius:8px;padding:10px 12px;white-space:pre-wrap;font-size:14px;margin:6px 0 14px}
-.empty{padding:30px;text-align:center;color:var(--muted)}
-[hidden]{display:none!important}
-.spin{display:inline-block;width:14px;height:14px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:s .7s linear infinite;vertical-align:-2px}
-@keyframes s{to{transform:rotate(360deg)}}
-@media (prefers-reduced-motion:reduce){.spin{animation:none}}
+
+/* ── Reset & Base ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; }
+html { font-size: 15px; }
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+  transition: background var(--t-med), color var(--t-med);
+}
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; color: var(--accent-hover); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+::selection { background: var(--accent-dim); }
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--surface); }
+::-webkit-scrollbar-thumb { background: var(--border-hover); border-radius: 99px; }
+
+/* ══════════════════════════════════════════════════════════════════
+   LAYOUT: Sidebar + Main
+══════════════════════════════════════════════════════════════════ */
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ── Sidebar ── */
+.sidebar {
+  width: var(--sidebar-w);
+  background: var(--sidebar-bg);
+  border-right: 1px solid var(--sidebar-border);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  z-index: 100;
+  overflow-y: auto;
+  overflow-x: hidden;
+  transition: transform var(--t-med);
+}
+.sidebar::before {
+  content: '';
+  position: absolute;
+  top: 0; right: 0; bottom: 0;
+  width: 1px;
+  background: linear-gradient(to bottom, transparent, var(--accent)22, transparent);
+  pointer-events: none;
+}
+.sidebar-logo {
+  padding: 22px 18px 18px;
+  border-bottom: 1px solid var(--sidebar-border);
+  flex-shrink: 0;
+}
+.sidebar-logo .logo-mark {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+.logo-icon {
+  width: 38px; height: 38px;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+  border-radius: var(--r-md);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 19px; flex-shrink: 0;
+  box-shadow: var(--glow);
+}
+.logo-text {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+.logo-sub {
+  font-size: 11px;
+  color: var(--ink-3);
+  margin-top: 1px;
+}
+.sidebar-status {
+  padding: 10px 14px;
+  margin: 10px 10px 0;
+  background: var(--accent-dim);
+  border: 1px solid var(--accent)33;
+  border-radius: var(--r-md);
+  font-size: 12px;
+  color: var(--accent);
+}
+.sidebar-status .dot {
+  display: inline-block;
+  width: 7px; height: 7px;
+  background: var(--accent);
+  border-radius: 50%;
+  margin-right: 6px;
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* ── Sidebar nav groups ── */
+.nav-group { padding: 10px 10px 4px; }
+.nav-group-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  padding: 0 8px 6px;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: var(--r-md);
+  cursor: pointer;
+  color: var(--ink-2);
+  font-size: 13.5px;
+  font-weight: 500;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  transition: background var(--t-fast), color var(--t-fast), transform var(--t-fast);
+  position: relative;
+}
+.nav-item:hover {
+  background: var(--surface-2);
+  color: var(--ink);
+  transform: translateX(2px);
+}
+.nav-item.active {
+  background: linear-gradient(90deg, var(--accent-dim), transparent);
+  color: var(--accent);
+  font-weight: 600;
+}
+.nav-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 50%;
+  transform: translateY(-50%);
+  width: 3px; height: 60%;
+  background: var(--accent);
+  border-radius: 0 3px 3px 0;
+}
+.nav-item .nav-icon {
+  width: 20px; height: 20px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+.nav-item .nav-badge {
+  margin-left: auto;
+  background: var(--accent);
+  color: var(--accent-text);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 99px;
+  min-width: 18px;
+  text-align: center;
+}
+.nav-item .nav-badge.new {
+  background: var(--red);
+  color: #fff;
+}
+
+/* ── Main content area ── */
+.main-content {
+  flex: 1;
+  margin-left: var(--sidebar-w);
+  min-width: 0;
+}
+
+/* ── Top bar ── */
+.topbar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 28px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.topbar-title {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--ink);
+  flex: 1;
+}
+.topbar-title .tab-desc {
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--ink-3);
+  margin-left: 10px;
+}
+.topbar-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* ── Page content wrapper ── */
+.page {
+  padding: 24px 28px 60px;
+  max-width: 1200px;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   COMPONENTS
+══════════════════════════════════════════════════════════════════ */
+
+/* ── Cards ── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 20px;
+}
+.card + .card, .card + .panel, .panel + .card {
+  margin-top: 16px;
+}
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 20px;
+}
+.card-title {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.card-title .icon {
+  width: 28px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: var(--r-sm);
+  font-size: 15px;
+  background: var(--surface-3);
+  flex-shrink: 0;
+}
+
+/* ── Stat cards ── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.stat-card {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 16px 18px;
+  position: relative;
+  overflow: hidden;
+}
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--accent);
+}
+.stat-card.green::before { background: var(--green); }
+.stat-card.yellow::before { background: var(--yellow); }
+.stat-card.red::before { background: var(--red); }
+.stat-card.blue::before { background: var(--blue); }
+.stat-card.purple::before { background: var(--purple); }
+.stat-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-bottom: 4px;
+}
+.stat-value {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--ink);
+  line-height: 1;
+}
+.stat-value.accent { color: var(--accent); }
+.stat-sub {
+  font-size: 12px;
+  color: var(--ink-3);
+  margin-top: 4px;
+}
+
+/* ── Buttons ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font: 500 13.5px var(--font-body);
+  padding: 7px 14px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--ink);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, transform 0.1s;
+  white-space: nowrap;
+  text-decoration: none;
+  line-height: 1.4;
+}
+.btn:hover:not(:disabled) {
+  background: var(--surface-3);
+  border-color: var(--border-hover);
+}
+.btn:active:not(:disabled) { transform: scale(0.98); }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.btn.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-text);
+  font-weight: 600;
+}
+.btn.primary:hover:not(:disabled) {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+.btn.ghost {
+  background: transparent;
+  border-color: transparent;
+  color: var(--ink-2);
+}
+.btn.ghost:hover:not(:disabled) {
+  background: var(--surface-2);
+  color: var(--ink);
+}
+
+.btn.danger {
+  background: var(--red-bg);
+  border-color: var(--red)44;
+  color: var(--red);
+}
+.btn.danger:hover:not(:disabled) {
+  background: var(--red)25;
+}
+
+.btn.success {
+  background: var(--green-bg);
+  border-color: var(--green)44;
+  color: var(--green);
+}
+
+.btn.sm { font-size: 12px; padding: 4px 10px; gap: 4px; }
+.btn.lg { font-size: 15px; padding: 10px 22px; }
+.btn.full { width: 100%; }
+
+/* ── Form controls ── */
+label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-2);
+  margin-bottom: 5px;
+  letter-spacing: 0.01em;
+}
+input, select, textarea {
+  font: 400 14px var(--font-body);
+  color: var(--ink);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 8px 12px;
+  width: 100%;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  -webkit-appearance: none;
+}
+input::placeholder, textarea::placeholder { color: var(--ink-3); }
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--accent)80;
+  box-shadow: 0 0 0 3px var(--accent)15;
+}
+select {
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238B949E' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 30px;
+}
+textarea { resize: vertical; min-height: 80px; }
+
+.form-group { margin-bottom: 14px; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.grid { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); align-items: end; }
+
+/* ── Badges / Tags ── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 99px;
+  white-space: nowrap;
+}
+.badge.green  { background: var(--green-bg);  color: var(--green); }
+.badge.yellow { background: var(--yellow-bg); color: var(--yellow); }
+.badge.red    { background: var(--red-bg);    color: var(--red); }
+.badge.blue   { background: var(--blue-bg);   color: var(--blue); }
+.badge.purple { background: var(--purple-bg); color: var(--purple); }
+.badge.gray   { background: var(--surface-3); color: var(--ink-2); }
+.badge.accent { background: var(--accent-dim); color: var(--accent); }
+
+/* Legacy tag aliases */
+.tag { display: inline-flex; align-items: center; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 99px; white-space: nowrap; }
+.t-no    { background: var(--green-bg);  color: var(--green); }
+.t-yes   { background: var(--surface-3); color: var(--ink-2); }
+.t-weak  { background: var(--yellow-bg); color: var(--yellow); }
+
+/* ── Tables ── */
+.tablewrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+}
+table {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 860px;
+}
+th, td {
+  text-align: left;
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+  font-size: 13.5px;
+}
+th {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  background: var(--surface-2);
+  position: sticky; top: 0;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+th:hover { color: var(--ink); }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--surface-2); }
+td input, td select, td textarea { background: var(--surface-3); font-size: 13px; padding: 5px 8px; }
+td textarea { min-width: 160px; min-height: 36px; }
+
+/* ── Score display ── */
+.score {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--ink-2);
+  line-height: 1;
+}
+.score.hot  { color: var(--accent); }
+.score.warm { color: var(--yellow); }
+.nm { font-weight: 600; color: var(--ink); }
+.sub { font-size: 12px; color: var(--ink-3); line-height: 1.4; }
+.acts { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+.issues { margin: 5px 0 0; padding-left: 16px; font-size: 12px; color: var(--yellow); }
+
+/* ── Messages / Alerts ── */
+.msg {
+  padding: 10px 14px;
+  border-radius: var(--r-md);
+  margin: 10px 0;
+  font-size: 13.5px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+.msg::before { font-size: 15px; flex-shrink: 0; }
+.msg.ok  { background: var(--green-bg);  color: var(--green);  border: 1px solid var(--green)33;  }
+.msg.ok::before  { content: '✓'; }
+.msg.err { background: var(--red-bg);    color: var(--red);    border: 1px solid var(--red)33;    }
+.msg.err::before { content: '⚠'; }
+.msg.warn { background: var(--yellow-bg); color: var(--yellow); border: 1px solid var(--yellow)33; }
+.msg.warn::before { content: '!'; }
+.msg.info { background: var(--blue-bg); color: var(--blue); border: 1px solid var(--blue)33; }
+.msg.info::before { content: 'ℹ'; }
+
+/* ── Toolbar ── */
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin: 12px 0;
+}
+.toolbar .grow { flex: 1; min-width: 0; }
+
+/* ── Guide / Guide content ── */
+.guide { max-width: 72ch; }
+.guide p, .guide li { line-height: 1.7; color: var(--ink-2); }
+.guide h3 { color: var(--ink); margin: 22px 0 8px; font-size: 16px; }
+.guide ol, .guide ul { padding-left: 22px; }
+.tmpl {
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 12px 14px;
+  white-space: pre-wrap;
+  font-size: 13px;
+  color: var(--ink-2);
+  margin: 8px 0 16px;
+  font-family: ui-monospace, monospace;
+}
+
+/* ── Tally / Stats row ── */
+.tally {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.tally > div {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 10px 16px;
+  min-width: 100px;
+}
+.tally b {
+  font-family: var(--font-display);
+  font-size: 24px;
+  display: block;
+  line-height: 1.1;
+  color: var(--ink);
+}
+.tally span { font-size: 11px; color: var(--ink-3); }
+
+/* ── Empty state ── */
+.empty {
+  padding: 48px 20px;
+  text-align: center;
+  color: var(--ink-3);
+  font-size: 14px;
+}
+.empty .empty-icon { font-size: 36px; margin-bottom: 10px; }
+.empty .empty-title { font-weight: 600; color: var(--ink-2); font-size: 15px; margin-bottom: 4px; }
+
+/* ── Spinner ── */
+.spin {
+  display: inline-block;
+  width: 14px; height: 14px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  vertical-align: -2px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Search source tabs ── */
+.seg {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 4px;
+  margin-bottom: 16px;
+}
+.seg label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  border-radius: var(--r-sm);
+  padding: 7px 12px;
+  cursor: pointer;
+  color: var(--ink-2);
+  font-size: 13px;
+  font-weight: 500;
+  margin: 0;
+  transition: background 0.15s, color 0.15s;
+  letter-spacing: 0;
+}
+.seg label:has(input:checked) {
+  background: var(--accent-dim);
+  color: var(--accent);
+  font-weight: 600;
+}
+.seg input { width: auto; display: none; }
+
+/* ── Code / kbd ── */
+code {
+  font-family: ui-monospace, monospace;
+  font-size: 12px;
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1px 5px;
+  color: var(--accent);
+}
+
+/* ── Divider ── */
+hr { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+
+/* ── Progress bar ── */
+.progress-bar {
+  height: 4px;
+  background: var(--surface-3);
+  border-radius: 99px;
+  overflow: hidden;
+  margin: 6px 0;
+}
+.progress-bar-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 99px;
+  transition: width 0.3s;
+}
+
+/* ── Tooltip ── */
+[data-tip] { position: relative; cursor: help; }
+[data-tip]::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  color: var(--ink);
+  font-size: 12px;
+  padding: 5px 9px;
+  border-radius: var(--r-sm);
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+  z-index: 999;
+}
+[data-tip]:hover::after { opacity: 1; }
+
+/* ── Collapsible section ── */
+.collapse-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  user-select: none;
+}
+.collapse-header::after {
+  content: '▾';
+  color: var(--ink-3);
+  transition: transform 0.2s;
+}
+.collapse-header.open::after { transform: rotate(-180deg); }
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  :root { --sidebar-w: 0px; }
+  .sidebar { transform: translateX(-100%); transition: transform 0.25s; }
+  .sidebar.open { transform: translateX(0); width: 248px; box-shadow: var(--shadow-lg); }
+  .main-content { margin-left: 0; }
+  .page { padding: 16px; }
+  .topbar { padding: 0 16px; }
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  table { min-width: 600px; }
+  .mobile-menu-btn { display: flex !important; }
+  .cmd-palette { width: 92vw !important; }
+  .toast-container { left: 12px; right: 12px; }
+}
+
+/* ── Print ── */
+@media print {
+  .sidebar, .topbar { display: none; }
+  .main-content { margin-left: 0; }
+}
+
+/* ═══ NEW UI COMPONENTS ═══ */
+
+/* ── Mobile menu button ── */
+.mobile-menu-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px; height: 36px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  cursor: pointer;
+  color: var(--ink);
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.mobile-menu-btn:hover { border-color: var(--border-hover); }
+
+/* ── Theme toggle ── */
+.theme-toggle {
+  width: 36px; height: 36px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  cursor: pointer;
+  color: var(--ink-2);
+  font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: all var(--t-fast);
+}
+.theme-toggle:hover {
+  color: var(--accent);
+  border-color: var(--accent)44;
+  background: var(--accent-dim);
+}
+
+/* ── Sidebar overlay (mobile) ── */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 99;
+  backdrop-filter: blur(2px);
+}
+.sidebar-overlay.show { display: block; }
+
+/* ── Toast notifications ── */
+.toast-container {
+  position: fixed;
+  bottom: 24px; right: 24px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+  max-width: 380px;
+}
+.toast {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 14px 18px;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13.5px;
+  color: var(--ink);
+  pointer-events: auto;
+  animation: toast-in 0.3s ease;
+  border-left: 3px solid var(--accent);
+}
+.toast.success { border-left-color: var(--green); }
+.toast.error { border-left-color: var(--red); }
+.toast.warning { border-left-color: var(--yellow); }
+.toast.info { border-left-color: var(--blue); }
+.toast .toast-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+.toast .toast-body { flex: 1; min-width: 0; }
+.toast .toast-title { font-weight: 600; margin-bottom: 2px; }
+.toast .toast-msg { color: var(--ink-2); font-size: 12.5px; }
+.toast.removing { animation: toast-out 0.25s ease forwards; }
+@keyframes toast-in {
+  from { opacity: 0; transform: translateX(60px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes toast-out {
+  to { opacity: 0; transform: translateX(60px); }
+}
+
+/* ── Command palette (Ctrl+K) ── */
+.cmd-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(4px);
+  z-index: 9000;
+  display: none;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 12vh;
+}
+.cmd-overlay.show { display: flex; animation: fade-in 0.15s ease; }
+.cmd-palette {
+  width: 560px;
+  max-height: 60vh;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-xl);
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: cmd-in 0.2s ease;
+}
+@keyframes cmd-in {
+  from { opacity: 0; transform: scale(0.96) translateY(-8px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+.cmd-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--border);
+}
+.cmd-input-wrap .cmd-icon { font-size: 18px; color: var(--ink-3); }
+.cmd-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font: 400 15px var(--font-body);
+  color: var(--ink);
+}
+.cmd-input::placeholder { color: var(--ink-3); }
+.cmd-kbd {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: var(--r-sm);
+  background: var(--surface-3);
+  color: var(--ink-3);
+  border: 1px solid var(--border);
+}
+.cmd-results {
+  overflow-y: auto;
+  padding: 8px;
+}
+.cmd-group-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  padding: 8px 10px 4px;
+}
+.cmd-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: var(--r-md);
+  cursor: pointer;
+  color: var(--ink-2);
+  font-size: 13.5px;
+  transition: background var(--t-fast);
+}
+.cmd-item:hover, .cmd-item.selected {
+  background: var(--accent-dim);
+  color: var(--accent);
+}
+.cmd-item .cmd-item-icon { font-size: 16px; width: 20px; text-align: center; flex-shrink: 0; }
+.cmd-item .cmd-item-label { flex: 1; }
+.cmd-item .cmd-item-hint { font-size: 11px; color: var(--ink-3); }
+.cmd-empty { padding: 24px; text-align: center; color: var(--ink-3); font-size: 13px; }
+
+/* ── Modal / Dialog ── */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(4px);
+  z-index: 8000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.modal-overlay.show { display: flex; animation: fade-in 0.15s ease; }
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-xl);
+  box-shadow: var(--shadow-lg);
+  max-width: 520px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  animation: modal-in 0.2s ease;
+}
+.modal.lg { max-width: 720px; }
+@keyframes modal-in {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--border);
+}
+.modal-title {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.modal-close {
+  background: none;
+  border: none;
+  color: var(--ink-3);
+  cursor: pointer;
+  font-size: 20px;
+  padding: 4px 8px;
+  border-radius: var(--r-sm);
+  transition: background var(--t-fast);
+}
+.modal-close:hover { background: var(--surface-2); color: var(--ink); }
+.modal-body { padding: 20px; }
+.modal-footer {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  padding: 16px 20px;
+  border-top: 1px solid var(--border);
+}
+
+/* ── Skeleton loader ── */
+.skeleton {
+  background: linear-gradient(90deg, var(--surface-2) 25%, var(--surface-3) 50%, var(--surface-2) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s infinite;
+  border-radius: var(--r-sm);
+}
+@keyframes skeleton-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.skeleton-line { height: 14px; margin-bottom: 8px; }
+.skeleton-line:last-child { width: 60%; }
+
+/* ── Glassmorphism utility ── */
+.glass {
+  background: color-mix(in srgb, var(--surface) 80%, transparent);
+  backdrop-filter: blur(12px);
+  border: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+}
+
+/* ── Fade-in animation ── */
+.fade-in { animation: fade-in-up 0.3s ease; }
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Scale-in animation ── */
+.scale-in { animation: scale-in 0.2s ease; }
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* ── Connection status badge ── */
+.conn-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: var(--r-full);
+  background: var(--green-bg);
+  color: var(--green);
+  border: 1px solid var(--green)22;
+}
+.conn-status.offline { background: var(--red-bg); color: var(--red); border-color: var(--red)22; }
+.conn-status .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; animation: pulse 2s infinite; }
+
+/* ── Section transition ── */
+section.page { animation: fade-in-up 0.25s ease; }
+
+/* ── Improved card hover ── */
+.card { transition: border-color var(--t-fast), box-shadow var(--t-fast); }
+.card:hover { border-color: var(--border-hover); }
+
+/* ── User avatar ── */
+.user-avatar {
+  width: 32px; height: 32px;
+  border-radius: var(--r-full);
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700;
+  color: var(--accent-text);
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+/* ── Keyboard shortcut hint ── */
+kbd {
+  display: inline-block;
+  padding: 2px 6px;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: var(--font-body);
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--ink-3);
+  box-shadow: 0 1px 0 var(--border);
+}
+
+/* ── Dropdown menu ── */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-lg);
+  min-width: 180px;
+  padding: 6px;
+  z-index: 200;
+  display: none;
+  animation: fade-in-up 0.15s ease;
+}
+.dropdown-menu.show { display: block; }
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--ink-2);
+  transition: background var(--t-fast);
+}
+.dropdown-item:hover { background: var(--surface-2); color: var(--ink); }
+.dropdown-item.danger { color: var(--red); }
+.dropdown-item.danger:hover { background: var(--red-bg); }
+.dropdown-divider { height: 1px; background: var(--border); margin: 4px 0; }
+
+[hidden] { display: none !important; }
 </style>
 </head>
 <body>
-<div class="wrap">
-<header>
-  <div><h1>LeadFinder</h1><div class="sub">Find businesses that need a website, anywhere in the world.</div></div>
-  <nav role="tablist">
-    <button role="tab" data-tab="find" aria-selected="true">Find leads</button>
-    <button role="tab" data-tab="list" aria-selected="false">My list <span id="listCount"></span></button>
-    <button role="tab" data-tab="guide" aria-selected="false">How to get clients</button>
-    <button role="tab" data-tab="settings" aria-selected="false">Settings</button>
-  </nav>
-</header>
+<div class="app-layout">
 
-<!-- FIND -->
-<section id="tab-find">
-  <div class="panel">
-    <div class="seg" style="margin-bottom:12px">
-      <label><input type="radio" name="src" value="google" checked> Google Maps (best, needs API key)</label>
-      <label><input type="radio" name="src" value="serpapi"> Google Maps via SerpApi (no Google Cloud)</label>
-      <label><input type="radio" name="src" value="osm"> OpenStreetMap (free)</label>
+<!-- ════════════════════════════════════════════════════════════════
+     SIDEBAR
+════════════════════════════════════════════════════════════════ -->
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">
+      <div class="logo-icon">🎯</div>
+      <div>
+        <div class="logo-text">LeadFinder</div>
+        <div class="logo-sub">AI Lead Intelligence</div>
+      </div>
     </div>
-    <form id="searchForm" class="grid">
-      <div>
-        <label for="qType">Business type</label>
-        <input id="qType" list="typeList" placeholder="e.g. plumber, dentist, roofer" required>
-        <datalist id="typeList"></datalist>
+  </div>
+
+  <div class="sidebar-status" id="sidebarStatus">
+    <span class="dot"></span> Ready
+  </div>
+
+  <!-- DISCOVERY GROUP -->
+  <div class="nav-group">
+    <div class="nav-group-label">Discovery</div>
+    <button class="nav-item active" role="tab" data-tab="find">
+      <span class="nav-icon">🔍</span> Find Leads
+    </button>
+    <button class="nav-item" role="tab" data-tab="mapview">
+      <span class="nav-icon">🗺️</span> Map View
+    </button>
+    <button class="nav-item" role="tab" data-tab="b2b">
+      <span class="nav-icon">🌍</span> B2B Buyer Hunt
+    </button>
+    <button class="nav-item" role="tab" data-tab="dorking">
+      <span class="nav-icon">🔎</span> Dorking
+    </button>
+  </div>
+
+  <!-- PIPELINE GROUP -->
+  <div class="nav-group">
+    <div class="nav-group-label">Pipeline</div>
+    <button class="nav-item" role="tab" data-tab="list">
+      <span class="nav-icon">📋</span> My List
+      <span class="nav-badge" id="listCount" style="display:none"></span>
+    </button>
+    <button class="nav-item" role="tab" data-tab="opportunities">
+      <span class="nav-icon">💎</span> Opportunities
+    </button>
+    <button class="nav-item" role="tab" data-tab="pipeline">
+      <span class="nav-icon">🚫</span> Suppression
+    </button>
+    <button class="nav-item" role="tab" data-tab="campaigns">
+      <span class="nav-icon">📊</span> Campaigns
+    </button>
+    <button class="nav-item" role="tab" data-tab="inbound">
+      <span class="nav-icon">📥</span> Inbound
+    </button>
+  </div>
+
+  <!-- OUTREACH GROUP -->
+  <div class="nav-group">
+    <div class="nav-group-label">Outreach</div>
+    <button class="nav-item" role="tab" data-tab="today">
+      <span class="nav-icon">📅</span> Today
+    </button>
+    <button class="nav-item" role="tab" data-tab="emails">
+      <span class="nav-icon">✉️</span> Email Outreach
+    </button>
+    <button class="nav-item" role="tab" data-tab="whatsapp">
+      <span class="nav-icon">💬</span> WhatsApp
+    </button>
+    <button class="nav-item" role="tab" data-tab="voice">
+      <span class="nav-icon">📞</span> Voice Calls
+    </button>
+    <button class="nav-item" role="tab" data-tab="linkedin">
+      <span class="nav-icon">💼</span> LinkedIn
+    </button>
+    <button class="nav-item" role="tab" data-tab="social-auto">
+      <span class="nav-icon">📱</span> Social Auto
+    </button>
+  </div>
+
+  <!-- INTELLIGENCE GROUP -->
+  <div class="nav-group">
+    <div class="nav-group-label">Intelligence</div>
+    <button class="nav-item" role="tab" data-tab="strategy">
+      <span class="nav-icon">🎯</span> Strategy AI
+    </button>
+    <button class="nav-item" role="tab" data-tab="knowledgebase">
+      <span class="nav-icon">🧠</span> Knowledge Base
+    </button>
+    <button class="nav-item" role="tab" data-tab="style">
+      <span class="nav-icon">✍️</span> My Style
+    </button>
+  </div>
+
+  <!-- TOOLS GROUP -->
+  <div class="nav-group">
+    <div class="nav-group-label">Tools</div>
+    <button class="nav-item" role="tab" data-tab="dashboard">
+      <span class="nav-icon">📈</span> Dashboard
+    </button>
+    <button class="nav-item" role="tab" data-tab="niche">
+      <span class="nav-icon">🏙️</span> Niche Finder
+    </button>
+    <button class="nav-item" role="tab" data-tab="hiring">
+      <span class="nav-icon">💼</span> Hiring Monitor
+    </button>
+    <button class="nav-item" role="tab" data-tab="jobsearch">
+      <span class="nav-icon">🧑‍💻</span> Job Search
+    </button>
+    <button class="nav-item" role="tab" data-tab="career">
+      <span class="nav-icon">📄</span> Career
+    </button>
+    <button class="nav-item" role="tab" data-tab="integrations">
+      <span class="nav-icon">🔗</span> Integrations
+    </button>
+  </div>
+
+  <!-- BOTTOM GROUP -->
+  <div class="nav-group" style="margin-top:auto">
+    <div class="nav-group-label">Account</div>
+    <button class="nav-item" role="tab" data-tab="guide">
+      <span class="nav-icon">📖</span> How to Get Clients
+    </button>
+    <button class="nav-item" role="tab" data-tab="settings">
+      <span class="nav-icon">⚙️</span> Settings
+    </button>
+  </div>
+</nav>
+
+<!-- ════════════════════════════════════════════════════════════════
+     MAIN CONTENT
+════════════════════════════════════════════════════════════════ -->
+<div class="main-content" id="main-content">
+
+  <!-- Top bar -->
+  <div class="topbar" id="topbar">
+    <button class="mobile-menu-btn" id="mobileMenuBtn" title="Menu">☰</button>
+    <div class="topbar-title" id="topbarTitle">
+      🔍 Find Leads
+      <span class="tab-desc">Search Google Maps, SerpApi, or OpenStreetMap</span>
+    </div>
+    <div class="topbar-actions">
+      <button class="theme-toggle" id="themeToggle" title="Toggle theme (Ctrl+J)">🌙</button>
+      <button class="btn sm ghost" id="cmdBtn" title="Command palette (Ctrl+K)">⌘K</button>
+      <button class="btn sm ghost" id="topbarRefreshHealth" onclick="loadHealth()">
+        <span id="healthDot" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);margin-right:2px"></span>
+        Live
+      </button>
+      <div class="dropdown">
+        <div class="user-avatar" id="userAvatar" title="Account">U</div>
+        <div class="dropdown-menu" id="userMenu">
+          <div class="dropdown-item" id="menuProfile">👤 Profile</div>
+          <div class="dropdown-item" id="menuBackup">💾 Backup Data</div>
+          <div class="dropdown-item" id="menuRestore">📥 Restore Data</div>
+          <div class="dropdown-divider"></div>
+          <div class="dropdown-item" id="menuTheme">🎨 Toggle Theme</div>
+          <div class="dropdown-item" id="menuShortcuts">⌨️ Shortcuts</div>
+          <div class="dropdown-divider"></div>
+          <div class="dropdown-item" id="menuAbout">ℹ️ About LeadFinder</div>
+          <div class="dropdown-divider" id="authDivider" style="display:none"></div>
+          <div class="dropdown-item danger" id="menuLogout" style="display:none">🚪 Logout</div>
+        </div>
       </div>
-      <div>
-        <label for="qLoc">Location</label>
-        <input id="qLoc" placeholder="e.g. Austin, Texas, USA  or  Leeds, UK" required>
+    </div>
+  </div>
+
+  <!-- Sidebar overlay (mobile) -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- Toast container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Command palette -->
+  <div class="cmd-overlay" id="cmdOverlay">
+    <div class="cmd-palette">
+      <div class="cmd-input-wrap">
+        <span class="cmd-icon">🔍</span>
+        <input class="cmd-input" id="cmdInput" placeholder="Search tabs, leads, or type a command…" autocomplete="off">
+        <span class="cmd-kbd">ESC</span>
       </div>
-      <div>
-        <label for="qFilter">Show</label>
-        <select id="qFilter">
-          <option value="no">No website only</option>
-          <option value="weak">No website + weak websites</option>
-          <option value="all">All businesses</option>
-        </select>
+      <div class="cmd-results" id="cmdResults"></div>
+    </div>
+  </div>
+
+  <!-- Modal container -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal" id="modalBox">
+      <div class="modal-header">
+        <div class="modal-title" id="modalTitle">Title</div>
+        <button class="modal-close" id="modalClose">✕</button>
       </div>
-      <div id="deepWrap">
-        <label for="qDeep">Search depth (Google key)</label>
-        <select id="qDeep">
-          <option value="0">Normal (up to 60)</option>
-          <option value="2">Deep: 4 areas (up to 240)</option>
-          <option value="3">Deeper: 9 areas (up to 540)</option>
-        </select>
+      <div class="modal-body" id="modalBody"></div>
+      <div class="modal-footer" id="modalFooter" style="display:none"></div>
+    </div>
+  </div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     TAB: FIND LEADS
+═══════════════════════════════════════════════════════════════ -->
+<section id="tab-find" class="page">
+
+  <!-- Source selector -->
+  <div class="card" style="margin-bottom:16px">
+    <div class="seg">
+      <label><input type="radio" name="src" value="google" checked> 🗺️ Google Maps <span style="font-size:10px;opacity:0.7">(best, needs key)</span></label>
+      <label><input type="radio" name="src" value="serpapi"> 🔎 SerpApi <span style="font-size:10px;opacity:0.7">(no Google Cloud)</span></label>
+      <label><input type="radio" name="src" value="osm"> 🆓 OpenStreetMap <span style="font-size:10px;opacity:0.7">(free, no key)</span></label>
+    </div>
+
+    <form id="searchForm">
+      <div class="grid">
+        <div class="form-group" style="margin:0">
+          <label for="qType">Business type</label>
+          <input id="qType" list="typeList" placeholder="e.g. plumber, dentist, restaurant" required>
+          <datalist id="typeList"></datalist>
+        </div>
+        <div class="form-group" style="margin:0">
+          <label for="qLoc">Location</label>
+          <input id="qLoc" placeholder="e.g. Austin TX · Leeds UK · Karachi PK" required>
+        </div>
+        <div class="form-group" style="margin:0">
+          <label for="qFilter">Show</label>
+          <select id="qFilter">
+            <option value="no">No website only</option>
+            <option value="weak">No website + weak sites</option>
+            <option value="all">All businesses</option>
+          </select>
+        </div>
+        <div id="deepWrap" class="form-group" style="margin:0">
+          <label for="qDeep">Search depth</label>
+          <select id="qDeep">
+            <option value="0">Normal (up to 60)</option>
+            <option value="2">Deep — 4 areas (240+)</option>
+            <option value="3">Deeper — 9 areas (540+)</option>
+          </select>
+        </div>
+        <div style="display:flex;align-items:flex-end">
+          <button class="btn primary full lg" type="submit" id="searchBtn">🔍 Search</button>
+        </div>
       </div>
-      <div><button class="btn primary" type="submit" id="searchBtn" style="width:100%">Search</button></div>
     </form>
-    <p class="note" id="srcNote"></p>
+    <p style="font-size:12px;color:var(--ink-3);margin:10px 0 0" id="srcNote"></p>
     <div id="findMsg"></div>
   </div>
 
+  <!-- Results -->
   <div id="resultsWrap" hidden>
     <div class="toolbar">
       <div class="grow sub" id="resultsInfo"></div>
-      <select id="bestN" class="btn sm" style="width:auto" aria-label="How many to analyze"><option value="5">Top 5</option><option value="10" selected>Top 10</option><option value="20">Top 20</option></select>
-      <button class="btn sm primary" id="bestTargets">Find best targets</button>
-      <button class="btn sm" id="bulkEmail">Find emails on all websites</button>
-      <button class="btn sm" id="bulkAudit">Check all websites</button>
-      <button class="btn sm primary" id="addAll">Add all shown to my list</button>
-      <button class="btn sm" id="exportResults">Download CSV</button>
+      <select id="bestN" class="btn sm" style="width:auto;background:var(--surface-2)">
+        <option value="5">Top 5</option>
+        <option value="10" selected>Top 10</option>
+        <option value="20">Top 20</option>
+      </select>
+      <button class="btn sm primary" id="bestTargets">⚡ Analyze best targets</button>
+      <button class="btn sm" id="bulkEmail">📧 Find all emails</button>
+      <button class="btn sm" id="bulkAudit">🔎 Audit all sites</button>
+      <button class="btn sm primary" id="addAll">➕ Add all to list</button>
+      <button class="btn sm ghost" id="exportResults">📥 CSV</button>
     </div>
-    <div class="tablewrap"><table>
-      <thead><tr>
-        <th data-sort="priority">Priority</th><th data-sort="score">Score</th><th data-sort="name">Business</th><th>Phone / email</th>
-        <th data-sort="site">Website</th><th data-sort="reviews">Reviews</th><th>Research</th><th></th>
-      </tr></thead>
-      <tbody id="results"></tbody>
-    </table></div>
-    <p class="note">"Find best targets" analyzes your top leads against nearby competitors and labels each one Hot, Warm or Low for cold calling. Score: higher means a better prospect. No website plus lots of good reviews means an established business that's missing out online.</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr>
+          <th data-sort="priority">Priority</th>
+          <th data-sort="score">Score</th>
+          <th data-sort="name">Business</th>
+          <th>Contact</th>
+          <th data-sort="site">Website</th>
+          <th data-sort="reviews">Reviews</th>
+          <th>Research</th>
+          <th></th>
+        </tr></thead>
+        <tbody id="results"></tbody>
+      </table>
+    </div>
+    <p style="font-size:12px;color:var(--ink-3);margin-top:10px">
+      Score 0–100: higher = better prospect. No website + lots of good reviews = established business missing online presence.
+    </p>
   </div>
 </section>
 
-<!-- LIST -->
-<section id="tab-list" hidden>
+<!-- ═══════════════════════════════════════════════════════════════
+     TAB: MY LIST
+═══════════════════════════════════════════════════════════════ -->
+<section id="tab-list" class="page" hidden>
   <div class="tally" id="tally"></div>
   <div class="toolbar">
-    <input id="listSearch" placeholder="Search your list" style="max-width:260px">
-    <select id="listStage" style="max-width:190px"></select>
+    <input id="listSearch" placeholder="🔍 Search name, address, email…" style="max-width:280px">
+    <select id="listStage" style="max-width:200px"></select>
     <div class="grow"></div>
-    <label class="btn sm" style="margin:0;color:var(--ink)">Import CSV<input type="file" id="importCsv" accept=".csv" hidden></label>
-    <button class="btn sm" id="exportList">Download CSV</button>
-    <button class="btn sm" id="clearList">Clear list</button>
+    <label class="btn sm" style="cursor:pointer">📂 Import CSV<input type="file" id="importCsv" accept=".csv" hidden></label>
+    <button class="btn sm ghost" id="exportList">📥 Export CSV</button>
+    <button class="btn sm danger" id="clearList">🗑️ Clear list</button>
   </div>
-  <div class="tablewrap"><table>
-    <thead><tr><th>Business</th><th>Priority</th><th>Contact</th><th>Website</th><th>Stage</th><th>Follow-up</th><th>Notes</th><th></th></tr></thead>
-    <tbody id="listBody"></tbody>
-  </table></div>
+  <div class="tablewrap">
+    <table>
+      <thead><tr>
+        <th>Business</th>
+        <th>Priority</th>
+        <th>Contact</th>
+        <th>Website</th>
+        <th>Stage</th>
+        <th>Follow-up</th>
+        <th>Notes</th>
+        <th></th>
+      </tr></thead>
+      <tbody id="listBody"></tbody>
+    </table>
+  </div>
 </section>
 
-<!-- GUIDE -->
-<section id="tab-guide" hidden>
-  <div class="panel guide">
-    <h2>The best ways to find website clients</h2>
+<!-- ═══════════════════════════════════════════════════════════════
+     TAB: GUIDE
+═══════════════════════════════════════════════════════════════ -->
+<section id="tab-guide" class="page" hidden>
+  <div class="card guide">
+    <h2 style="font-family:var(--font-display);font-size:20px;margin-bottom:16px">📖 How to Get Website Clients</h2>
+
     <h3>1. Target the right businesses</h3>
-    <p>The best prospects are established local service businesses with no website or a bad one: plumbers, roofers, electricians, dentists, salons, auto repair shops, cleaners, landscapers and restaurants. They need a steady flow of calls, and each new customer is worth a lot to them. Look for 20+ Google reviews and a 4+ rating: those owners are busy and have money, but lose customers who search online.</p>
+    <p>The best prospects are established local service businesses with no website or a bad one: plumbers, roofers, electricians, dentists, salons, auto repair shops, cleaners, landscapers, and restaurants. They need steady calls, and each new customer is worth a lot to them. Look for 20+ reviews and 4+ rating — those owners are busy, have money, but lose customers who search online.</p>
+
     <h3>2. Sell a "digital identity", not just a website</h3>
-    <p>Owners buy outcomes: being found on Google, looking trustworthy, and getting bookings. Use the Digital identity check to show their score, what's missing and what competitors have. Then offer three packages (Starter, Growth, Premium). Most owners choose the middle one, and the monthly care plan gives you recurring income.</p>
-    <p>Only pitch an app to businesses with repeat customers (restaurants, gyms, salons, clinics, schools). For them, an installable web app (PWA) is far cheaper than a store app and installs from their website. For plumbers or lawyers, a great website with click-to-call is the right answer.</p>
-    <h3>2b. Pitch something specific</h3>
-    <p>Before contacting anyone, do 5 minutes of research with the Research buttons. Check their Google listing, Facebook and Instagram. Then name a real problem: "When I search 'plumber in Leeds' you don't show up with a site, but your 4.8-star competitor does." For weak sites, use the issues LeadFinder finds, such as not mobile-friendly, no HTTPS or slow loading.</p>
-    <h3>3. Show, don't tell (the highest-converting method)</h3>
-    <p>Build a quick demo homepage using their name, photos and reviews, then send them the link. Owners reply far more often to "I made this for you, take a look" than to a generic offer. Even a one-page template you customize in 30 minutes works.</p>
-    <h3>4. Channel by country</h3>
+    <p>Owners buy outcomes: being found on Google, looking trustworthy, getting bookings. Use the Digital Identity check to show their score and what's missing. Offer three packages (Starter, Growth, Premium). Most choose the middle one, and a monthly care plan gives you recurring income.</p>
+
+    <h3>3. Show, don't tell</h3>
+    <p>Build a quick demo homepage using their name, photos and reviews, then send them the link. Owners reply far more often to <em>"I made this for you, take a look"</em> than to a generic offer.</p>
+
+    <h3>4. Channel by region</h3>
     <ul>
-      <li><b>USA:</b> Phone calls and email work well. Call Tuesday to Thursday, mid-morning. Follow up by email with the demo link. Don't use auto-dialers or pre-recorded messages (TCPA rules), and honor "don't call me again".</li>
-      <li><b>UK:</b> Business email to company addresses is generally allowed with a clear opt-out. Sole traders are treated more like consumers, so be careful. Check numbers against the TPS/CTPS do-not-call lists before cold calling.</li>
-      <li><b>Pakistan, India, UAE, Middle East:</b> WhatsApp gets the most replies. Send a short voice note or message plus the demo link. Visiting in person also works very well.</li>
-      <li><b>Everywhere:</b> Instagram and Facebook DMs work for salons, cafes, bakeries and boutiques that are active there.</li>
+      <li><b>USA/UK:</b> Phone calls and email. Call Tue–Thu, mid-morning. Follow up by email with the demo link.</li>
+      <li><b>Pakistan / India / UAE / Middle East:</b> WhatsApp gets the most replies. Send a short voice note + demo link. In-person visits also work very well.</li>
+      <li><b>Everywhere:</b> Instagram and Facebook DMs work for salons, cafés, bakeries, and boutiques.</li>
     </ul>
-    <p class="sub">This isn't legal advice. Rules differ by country, so check the local rules on cold calling and email before running a campaign.</p>
-    <h3>5. Follow up (most deals happen here)</h3>
-    <p>Most replies come after the 2nd to 4th contact. Use the Follow-up date in My list: contact on day 1, follow up on day 3, again on day 7 and a last time on day 14. Keep it short and friendly each time.</p>
-    <h3>6. Other ways to get clients</h3>
-    <ul>
-      <li>Freelance sites: Upwork, Fiverr, Freelancer and PeoplePerHour. Build reviews there first.</li>
-      <li>Local Facebook groups and community groups where business owners ask for recommendations.</li>
-      <li>Partnerships with people who serve the same clients: printers, sign makers, accountants and marketing agencies.</li>
-      <li>Referrals: offer every happy client a discount or cash for each business they send you.</li>
-      <li>Your own portfolio site and a Google Business Profile for your web design service.</li>
-    </ul>
+
+    <h3>5. Follow up — most deals happen here</h3>
+    <p>Contact day 1 → follow up day 3 → day 7 → day 14. Keep it short and friendly each time.</p>
+
     <h3>Message templates</h3>
     <p class="sub">Cold email (USA/UK)</p>
     <div class="tmpl">Subject: Quick idea for {Business}
 
 Hi {Name},
 
-I found {Business} on Google. {Reviews} reviews at {Rating} stars is impressive, but I noticed you don't have a website, so people searching "{type} in {city}" are landing on your competitors instead.
+I found {Business} on Google. {Reviews} reviews at {Rating} stars is impressive — but I noticed you don't have a website, so people searching "{type} in {city}" land on your competitors instead.
 
-I put together a free sample homepage for you: {demo link}
+I put together a free sample homepage: {demo link}
 
 If you like it, I can have it live within a week for {price}. Worth a quick 10-minute call?
 
 {Your name}
-{Phone} | {Portfolio}
 Reply "no thanks" and I won't contact you again.</div>
-    <p class="sub">WhatsApp</p>
-    <div class="tmpl">Assalam o Alaikum / Hi {Name}, I'm {Your name}, a web designer. I saw {Business} has great reviews on Google but no website. I made a free sample site for you: {demo link}. Can I show you how it would bring more customers? 😊</div>
-    <p class="sub">Phone call opener</p>
-    <div class="tmpl">"Hi, is this the owner? I'll be quick. I'm a local web designer. I was searching for {type} in {city} and your reviews stood out, but I couldn't find a website for you. I've made a free sample homepage. Can I send it to you on WhatsApp or email?"</div>
+
+    <p class="sub">WhatsApp message</p>
+    <div class="tmpl">Hi {Name}, I'm {Your name}, a web designer. I saw {Business} has great reviews on Google but no website. I made a free sample site: {demo link}. Can I show you how it would bring more customers? 😊</div>
+
+    <p class="sub">Phone opener</p>
+    <div class="tmpl">"Hi, is this the owner? I'll be quick. I'm a web designer. I was searching for {type} in {city} and your reviews stood out, but I couldn't find a website. I made a free sample. Can I send it to you on WhatsApp or email?"</div>
   </div>
 </section>
 
-<!-- SETTINGS -->
-<section id="tab-settings" hidden>
-  <div class="panel guide">
-    <h2>Settings</h2>
-    <label for="apiKey">Google Places API key</label>
-    <input id="apiKey" type="password" placeholder="Paste your key here" autocomplete="off">
-    <p class="note" id="envKeyNote"></p>
-    <button class="btn" id="testKey" type="button" style="margin-top:8px">Test Google key</button>
-    <div id="testMsg"></div>
-    <label style="margin-top:12px" for="serpKey">SerpApi key (optional, for "Google Maps via SerpApi")</label>
-    <input id="serpKey" type="password" placeholder="Paste your SerpApi key" autocomplete="off">
-    <p class="note">SerpApi (serpapi.com) returns Google Maps results without a Google Cloud account. Sign up, copy the key from your dashboard, and check their plans for the free search allowance.</p>
-    <label style="margin-top:12px" for="pages">Google results per search</label>
-    <select id="pages" style="max-width:240px">
-      <option value="1">20 (cheapest)</option><option value="2">40</option><option value="3" selected>60 (maximum)</option>
-    </select>
-    <label style="margin-top:12px" for="radius">Competitor search radius</label>
-    <select id="radius" style="max-width:240px">
-      <option value="1000">1 km (dense city centre)</option><option value="3000" selected>3 km</option>
-      <option value="8000">8 km</option><option value="20000">20 km (rural / trades)</option>
-    </select>
-    <label style="margin-top:12px" for="myName">Your name (used in AI scripts)</label>
-    <input id="myName" placeholder="e.g. Ali Raza">
-    <label style="margin-top:8px" for="myBusiness">Your business name</label>
-    <input id="myBusiness" placeholder="e.g. Raza Web Studio">
+<!-- ═══════════════════════════════════════════════════════════════
+     TAB: SETTINGS
+═══════════════════════════════════════════════════════════════ -->
+<section id="tab-settings" class="page" hidden>
+  <div class="card guide">
+    <h2 style="font-family:var(--font-display);font-size:20px;margin-bottom:20px">⚙️ Settings</h2>
 
-    <h3>Additional API keys</h3>
-    <p class="note">These are stored server-side in <code>data/config.json</code> and used by the Dorking, WebCrawler, PageSpeed, and Identity modules.</p>
-    <label style="margin-top:8px" for="cseKey">Google Custom Search API key (for Dorking &amp; WebCrawler)</label>
-    <input id="cseKey" type="password" placeholder="AIza… from Google Cloud Custom Search API" autocomplete="off">
-    <label style="margin-top:8px" for="cseId">Custom Search Engine ID (CX)</label>
-    <input id="cseId" placeholder="e.g. 017576662512468239146:omuauf_lfve">
-    <label style="margin-top:8px" for="psKey">PageSpeed / Lighthouse API key (optional — free tier works without one)</label>
-    <input id="psKey" type="password" placeholder="AIza… (optional)" autocomplete="off">
-    <label style="margin-top:8px" for="chKey">Companies House API key (UK owner lookup)</label>
-    <input id="chKey" type="password" placeholder="Paste your Companies House key" autocomplete="off">
-    <label style="margin-top:8px" for="hunterKey">Hunter.io API key (email finder)</label>
-    <input id="hunterKey" type="password" placeholder="Paste your Hunter.io key" autocomplete="off">
-    <button class="btn" id="saveApiKeys" style="margin-top:10px">Save API keys</button>
-    <div id="apiKeysMsg"></div>
+    <!-- API Keys -->
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-title"><span class="icon">🔑</span> API Keys</div>
+      <div class="grid-2">
+        <div class="form-group">
+          <label>Google Places API Key</label>
+          <input id="apiKey" type="password" placeholder="AIza…" autocomplete="off">
+        </div>
+        <div class="form-group">
+          <label>SerpApi Key</label>
+          <input id="serpKey" type="password" placeholder="Paste SerpApi key" autocomplete="off">
+        </div>
+        <div class="form-group">
+          <label>Google Custom Search Key (Dorking)</label>
+          <input id="cseKey" type="password" placeholder="AIza…" autocomplete="off">
+        </div>
+        <div class="form-group">
+          <label>Custom Search Engine ID (CX)</label>
+          <input id="cseId" placeholder="017576…">
+        </div>
+        <div class="form-group">
+          <label>Hunter.io API Key (email finder)</label>
+          <input id="hunterKey" type="password" placeholder="Paste Hunter key" autocomplete="off">
+        </div>
+        <div class="form-group">
+          <label>Companies House Key (UK)</label>
+          <input id="chKey" type="password" placeholder="Paste key" autocomplete="off">
+        </div>
+        <div class="form-group">
+          <label>PageSpeed API Key (optional)</label>
+          <input id="psKey" type="password" placeholder="AIza… (optional)" autocomplete="off">
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <button class="btn sm primary" id="saveApiKeys">💾 Save API Keys</button>
+        <button class="btn sm" id="testKey">🔬 Test Google Key</button>
+      </div>
+      <div id="apiKeysMsg"></div>
+      <div id="testMsg"></div>
+    </div>
 
-    <h3>Free AI writer</h3>
-    <label for="aiProvider">AI provider</label>
-    <select id="aiProvider" style="max-width:320px">
-      <option value="ollama">Ollama (free, runs on your computer)</option>
-      <option value="openai">OpenAI-compatible API (LM Studio, Groq, OpenRouter…)</option>
-    </select>
-    <label style="margin-top:8px" for="aiModel">Model name</label>
-    <input id="aiModel" placeholder="llama3.2">
-    <label style="margin-top:8px" for="aiBase">Base URL</label>
-    <input id="aiBase" placeholder="http://localhost:11434">
-    <label style="margin-top:8px" for="aiKey">API key (not needed for Ollama)</label>
-    <input id="aiKey" type="password" autocomplete="off">
-    <p class="note">Ollama: install from ollama.com, run <code>ollama pull llama3.2</code>, keep it running. LM Studio: base URL <code>http://localhost:1234/v1</code>. Cloud providers with free tiers: use their OpenAI-compatible base URL and key.</p>
-    <button class="btn primary" id="saveSettings" style="margin-top:12px">Save settings</button>
+    <!-- Search preferences -->
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-title"><span class="icon">🔍</span> Search Preferences</div>
+      <div class="grid-3">
+        <div class="form-group">
+          <label>Results per search</label>
+          <select id="pages">
+            <option value="1">20 (cheapest)</option>
+            <option value="2">40</option>
+            <option value="3" selected>60 (maximum)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Competitor search radius</label>
+          <select id="radius">
+            <option value="1000">1 km (city centre)</option>
+            <option value="3000" selected>3 km</option>
+            <option value="8000">8 km</option>
+            <option value="20000">20 km (rural)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Your info -->
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-title"><span class="icon">👤</span> Your Information</div>
+      <div class="grid-2">
+        <div class="form-group">
+          <label>Your name (for AI scripts)</label>
+          <input id="myName" placeholder="e.g. Ali Raza">
+        </div>
+        <div class="form-group">
+          <label>Your business name</label>
+          <input id="myBusiness" placeholder="e.g. Raza Web Studio">
+        </div>
+      </div>
+    </div>
+
+    <!-- AI Pool -->
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-title"><span class="icon">🤖</span> Free AI Writer</div>
+      <div class="grid-2">
+        <div class="form-group">
+          <label>AI Provider</label>
+          <select id="aiProvider">
+            <option value="ollama">Ollama (free, local)</option>
+            <option value="openai">OpenAI-compatible API</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Model name</label>
+          <input id="aiModel" placeholder="llama3.2">
+        </div>
+        <div class="form-group">
+          <label>Base URL</label>
+          <input id="aiBase" placeholder="http://localhost:11434">
+        </div>
+        <div class="form-group">
+          <label>API Key (not needed for Ollama)</label>
+          <input id="aiKey" type="password" autocomplete="off">
+        </div>
+      </div>
+      <p style="font-size:12px;color:var(--ink-3);margin:8px 0">
+        Ollama: <code>ollama pull llama3.2</code>. LM Studio: base URL <code>http://localhost:1234/v1</code>. Cloud free tiers: Groq, Mistral, OpenRouter.
+      </p>
+    </div>
+
+    <button class="btn primary" id="saveSettings">💾 Save All Settings</button>
     <div id="settingsMsg"></div>
-    <h3>How to get a Google Places API key</h3>
-    <p class="note">If a search fails, press "Test Google key". The message tells you exactly which step to fix.</p>
-    <ol>
-      <li>Go to console.cloud.google.com and create a project.</li>
-      <li>Turn on billing (Google requires a card; there is a monthly free usage allowance, so check their current pricing).</li>
-      <li>Open "APIs &amp; Services", then "Library", and enable <b>Places API (New)</b>.</li>
-      <li>Open "Credentials", create an API key. Under "API restrictions" choose Places API (New). Leave "Application restrictions" as None.</li>
-      <li>Paste it above. The key stays on your computer.</li>
-    </ol>
-    <p class="note">Tip: set a daily quota limit in Google Cloud so you never get a surprise bill.</p>
+
+    <!-- Multi-user / Workspace -->
+    <div class="card" style="margin-top:20px">
+      <div class="card-title"><span class="icon">👥</span> Multi-User Workspace</div>
+      <p class="sub" style="margin-bottom:14px">Enable multi-user mode to let team members log in with their own accounts. Each user gets their own session. Data is shared on the same machine.</p>
+      <div class="toolbar" style="margin:0">
+        <div class="grow" id="muStatus">Checking…</div>
+        <button class="btn sm" id="muToggle">Enable</button>
+      </div>
+      <div id="muUsers" style="margin-top:16px"></div>
+      <div id="muMsg"></div>
+    </div>
+
+    <div class="card" style="margin-top:20px">
+      <div class="card-title"><span class="icon">📋</span> How to get a Google Places API key</div>
+      <ol style="font-size:13px;color:var(--ink-2);padding-left:20px;line-height:2">
+        <li>Go to <a href="https://console.cloud.google.com" target="_blank">console.cloud.google.com</a> and create a project.</li>
+        <li>Enable billing (a card is required; there is a free usage allowance — check current pricing).</li>
+        <li>Open "APIs & Services → Library" → enable <b>Places API (New)</b>.</li>
+        <li>Open "Credentials" → Create API key → restrict to Places API (New).</li>
+        <li>Paste the key above. It stays on your computer.</li>
+      </ol>
+      <p style="font-size:12px;color:var(--ink-3);margin-top:8px">Set a daily quota limit in Google Cloud to avoid unexpected charges.</p>
+    </div>
   </div>
 </section>
-</div>
+
+</div><!-- /.main-content -->
+</div><!-- /.app-layout -->
 
 <script>
 (function(){
+/* ═══════════════════════════════════════════════════
+   CORE APP — Tab system, Lead logic, Settings
+═══════════════════════════════════════════════════ */
 const $ = s => document.querySelector(s);
 const STAGES = ["New","Contacted","No answer","Interested","Follow up","Proposal sent","Won","Not interested"];
 const store = {
@@ -303,7 +1710,7 @@ let myList = store.get("lf-list", []);
 let results = [], sortKey = "score", sortDir = -1, categories = [];
 
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const digits = p => { let d = String(p||"").replace(/\D/g,""); return d; };
+const digits = p => String(p||"").replace(/\D/g,"");
 const host = u => { try { return new URL(/^https?:/i.test(u)?u:"http://"+u).hostname.replace(/^www\./,""); } catch(e){ return u; } };
 const isSocial = u => /facebook\.com|instagram\.com|linktr\.ee|wa\.me|business\.site|g\.page/i.test(u||"");
 
@@ -314,105 +1721,206 @@ async function api(path, body){
   return j;
 }
 
-/* tabs */
+/* ── Tab system ── */
+const TAB_META = {
+  "find":          { label: "🔍 Find Leads",          desc: "Search Google Maps, SerpApi, or OpenStreetMap" },
+  "list":          { label: "📋 My List",              desc: "CRM pipeline — track your leads" },
+  "b2b":           { label: "🌍 B2B Buyer Hunt",       desc: "Find international product buyers" },
+  "strategy":      { label: "🎯 Strategy AI",          desc: "30/90-day plan + ICP generator" },
+  "mapview":       { label: "🗺️ Map View",             desc: "Click-to-search on live map" },
+  "inbound":       { label: "📥 Inbound",              desc: "Capture & auto-respond to inbound leads" },
+  "campaigns":     { label: "📊 Campaigns",            desc: "Track sends, replies, meetings & won" },
+  "knowledgebase": { label: "🧠 Knowledge Base",       desc: "Tell AI who you are and what you offer" },
+  "whatsapp":      { label: "💬 WhatsApp",             desc: "Real WhatsApp sending via Baileys" },
+  "voice":         { label: "📞 Voice Calls",          desc: "AI voice agent via Vapi + Twilio + n8n" },
+  "style":         { label: "✍️ My Style",             desc: "Teach AI your writing voice" },
+  "dashboard":     { label: "📈 Dashboard",            desc: "Pipeline analytics & performance" },
+  "niche":         { label: "🏙️ Niche Finder",         desc: "Sample markets for opportunity data" },
+  "dorking":       { label: "🔎 Dorking",              desc: "Google Custom Search lead discovery" },
+  "hiring":        { label: "💼 Hiring Monitor",       desc: "Businesses looking for developers" },
+  "jobsearch":     { label: "🧑‍💻 Job Search",           desc: "BeBee, Google, JobLeads" },
+  "career":        { label: "📄 Career Pipeline",      desc: "Resume tailoring & applications" },
+  "integrations":  { label: "🔗 Integrations",         desc: "Sheets, IMAP, PageSpeed, WebCrawler" },
+  "today":         { label: "📅 Today",                 desc: "Daily inbox, autopilot & activity goals" },
+  "emails":        { label: "✉️ Email Outreach",       desc: "AI cold email writer & SMTP send" },
+  "opportunities": { label: "💎 Opportunities",         desc: "5-component evidence-backed lead scoring" },
+  "pipeline":      { label: "🚫 Suppression",          desc: "Do-not-contact list & domain dedup" },
+  "guide":         { label: "📖 How to Get Clients",   desc: "" },
+  "settings":      { label: "⚙️ Settings",             desc: "API keys, AI providers, preferences" },
+  "linkedin":      { label: "💼 LinkedIn",             desc: "LinkedIn connection growth automation" },
+  "social-auto":   { label: "📱 Social Auto",          desc: "Threads, Instagram, Facebook outreach" },
+};
+
+const tabHooks = {};
 function showTab(name){
-  document.querySelectorAll("nav button").forEach(x => x.setAttribute("aria-selected", x.dataset.tab === name));
-  document.querySelectorAll("section[id^='tab-']").forEach(s => s.hidden = s.id !== "tab-" + name);
+  document.querySelectorAll(".nav-item[role='tab']").forEach(x => {
+    x.classList.toggle("active", x.dataset.tab === name);
+  });
+  document.querySelectorAll("section[id^='tab-']").forEach(s => {
+    s.hidden = s.id !== "tab-" + name;
+  });
+  const meta = TAB_META[name] || {};
+  const tb = $("#topbarTitle");
+  if (tb) tb.innerHTML = `${meta.label || name}${meta.desc ? `<span class="tab-desc">${esc(meta.desc)}</span>` : ""}`;
   if (name === "list") renderList();
   const cb = tabHooks[name]; if (cb) cb();
   window.scrollTo(0, 0);
 }
-const tabHooks = {};
-function bindTab(b, onShow){ if (onShow) tabHooks[b.dataset.tab] = onShow; b.onclick = () => showTab(b.dataset.tab); }
-document.querySelectorAll("nav button").forEach(b => bindTab(b));
+function bindTab(b, onShow){
+  if (onShow) tabHooks[b.dataset.tab] = onShow;
+  b.onclick = () => showTab(b.dataset.tab);
+}
+document.querySelectorAll(".nav-item[role='tab']").forEach(b => bindTab(b));
 
-/* meta */
+/* ── Health check ── */
+window.loadHealth = async function(){
+  try {
+    const j = await api("/api/health");
+    const dot = $("#healthDot");
+    if (dot) dot.style.background = "var(--green)";
+    const sb = $("#sidebarStatus");
+    if (sb) sb.innerHTML = `<span class="dot"></span> Ready · ${j.cachedPages||0} pages cached`;
+  } catch(e) {
+    const dot = $("#healthDot");
+    if (dot) dot.style.background = "var(--red)";
+  }
+};
+loadHealth();
+
+/* ── Meta (categories) ── */
 api("/api/meta").then(m => {
   categories = m.categories;
   $("#typeList").innerHTML = categories.map(c => `<option value="${esc(c)}">`).join("");
-  $("#envKeyNote").textContent = m.envKey ? "A key was also found in the GOOGLE_PLACES_API_KEY environment variable; it's used when this box is empty." : "";
+  if (m.envKey) {
+    const n = document.getElementById("envKeyNote");
+    if (n) n.textContent = "✓ GOOGLE_PLACES_API_KEY found in environment.";
+  }
 }).catch(()=>{});
 
-/* settings */
-$("#apiKey").value = settings.apiKey || "";
-$("#serpKey").value = settings.serpKey || "";
-$("#radius").value = settings.radius || "3000";
-$("#myName").value = settings.myName || "";
-$("#myBusiness").value = settings.myBusiness || "";
-const ai0 = settings.ai || {};
-$("#aiProvider").value = ai0.provider || "ollama";
-$("#aiModel").value = ai0.model || "";
-$("#aiBase").value = ai0.baseUrl || "";
-$("#aiKey").value = ai0.apiKey || "";
-$("#pages").value = settings.pages || "3";
-$("#saveSettings").onclick = () => {
-  settings = {apiKey: $("#apiKey").value.trim(), serpKey: $("#serpKey").value.trim(), pages: $("#pages").value,
-    radius: $("#radius").value, myName: $("#myName").value.trim(), myBusiness: $("#myBusiness").value.trim(),
-    ai: {provider: $("#aiProvider").value, model: $("#aiModel").value.trim(), baseUrl: $("#aiBase").value.trim(), apiKey: $("#aiKey").value.trim()}};
+/* ── Load settings ── */
+function applySettings(){
+  const v = (id, val) => { const el = $(id); if (el) el.value = val || ""; };
+  v("#apiKey", settings.apiKey);
+  v("#serpKey", settings.serpKey);
+  v("#radius", settings.radius || "3000");
+  v("#myName", settings.myName);
+  v("#myBusiness", settings.myBusiness);
+  const ai0 = settings.ai || {};
+  v("#aiProvider", ai0.provider || "ollama");
+  v("#aiModel", ai0.model);
+  v("#aiBase", ai0.baseUrl);
+  v("#aiKey", ai0.apiKey);
+  v("#pages", settings.pages || "3");
+}
+applySettings();
+
+$('#saveSettings').onclick = () => {
+  settings = {
+    apiKey: $("#apiKey").value.trim(),
+    serpKey: $("#serpKey").value.trim(),
+    pages: $("#pages").value,
+    radius: $("#radius").value,
+    myName: $("#myName").value.trim(),
+    myBusiness: $("#myBusiness").value.trim(),
+    ai: { provider: $("#aiProvider").value, model: $("#aiModel").value.trim(),
+          baseUrl: $("#aiBase").value.trim(), apiKey: $("#aiKey").value.trim() }
+  };
   store.set("lf-settings", settings);
   $("#settingsMsg").innerHTML = '<div class="msg ok">Settings saved.</div>';
+  setTimeout(() => { const el = $("#settingsMsg"); if(el) el.innerHTML = ""; }, 3000);
 };
 
-// Load server-side API keys into the Settings form on tab open
+/* ── Load server-side API keys ── */
 async function loadApiKeys(){
   try {
     const j = await api("/api/assistant/config", {});
     const k = (j.config || {}).keys || {};
-    if (k.cse    !== undefined) $("#cseKey").value    = k.cse    ? "••••saved" : "";
-    if (k.cseId  !== undefined) $("#cseId").value     = k.cseId  || "";
-    if (k.pagespeed !== undefined) $("#psKey").value  = k.pagespeed ? "••••saved" : "";
-    if (k.ch     !== undefined) $("#chKey").value     = k.ch     ? "••••saved" : "";
-    if (k.hunter !== undefined) $("#hunterKey").value = k.hunter ? "••••saved" : "";
-    if (k.google !== undefined && k.google && !$("#apiKey").value) $("#apiKey").value = "";
-    if (k.serp   !== undefined && k.serp && !$("#serpKey").value) $("#serpKey").value = "";
+    const setKey = (id, val) => { const el = $(id); if (el && val) el.value = "••••saved"; };
+    setKey("#cseKey", k.cse);
+    setKey("#hunterKey", k.hunter);
+    setKey("#chKey", k.ch);
+    setKey("#psKey", k.pagespeed);
+    if (k.cseId) { const el = $("#cseId"); if (el) el.value = k.cseId; }
   } catch(e){}
 }
-tabHooks["settings"] = loadApiKeys;
+tabHooks["settings"] = async () => {
+  await loadApiKeys();
+  await loadMultiUser();
+};
 
-$("#saveApiKeys").onclick = async () => {
+/* ── Multi-user workspace ── */
+async function loadMultiUser(){
+  const status = $("#muStatus"), btn = $("#muToggle"), usersEl = $("#muUsers");
+  if (!status) return;
+  try {
+    const j = await api("/api/auth/status");
+    status.textContent = j.enabled ? "Multi-user mode is enabled" : "Single-user mode (no login required)";
+    if (btn) {
+      btn.textContent = j.enabled ? "Disable" : "Enable";
+      btn.className = j.enabled ? "btn sm danger" : "btn sm primary";
+      btn.onclick = async () => {
+        try {
+          await api("/api/auth/" + (j.enabled ? "disable" : "enable"), {});
+          toast(j.enabled ? "Multi-user mode disabled" : "Multi-user mode enabled", "success");
+          loadMultiUser();
+        } catch(e){ toast(e.message, "error"); }
+      };
+    }
+    if (usersEl && j.enabled && j.users?.length){
+      usersEl.innerHTML = '<div style="font-size:12px;font-weight:600;color:var(--ink-2);margin-bottom:8px">Registered users:</div>' +
+        j.users.map(u => `<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-md);margin-bottom:6px">
+          <div><span class="nm">${esc(u.display_name||u.username)}</span> <span class="badge ${u.role==='admin'?'accent':'gray'}">${u.role}</span></div>
+          <span class="sub">${esc(u.username)}</span></div>`).join("");
+    } else {
+      usersEl.innerHTML = "";
+    }
+  } catch(e){
+    status.textContent = "Multi-user feature unavailable";
+  }
+}
+
+$('#saveApiKeys').onclick = async () => {
   const keys = {};
-  const cse = $("#cseKey").value.trim();
-  const cseId = $("#cseId").value.trim();
-  const ps = $("#psKey").value.trim();
-  const ch = $("#chKey").value.trim();
-  const hunter = $("#hunterKey").value.trim();
-  if (cse && !cse.startsWith("•")) keys.cse = cse;
-  if (cseId) keys.cseId = cseId;
-  if (ps && !ps.startsWith("•")) keys.pagespeed = ps;
-  if (ch && !ch.startsWith("•")) keys.ch = ch;
-  if (hunter && !hunter.startsWith("•")) keys.hunter = hunter;
-  // Also save the Places + SerpApi keys server-side
-  const gk = $("#apiKey").value.trim();
-  const sk = $("#serpKey").value.trim();
-  if (gk) keys.google = gk;
-  if (sk) keys.serp = sk;
+  const fields = [
+    ["#cseKey", "cse"], ["#cseId", "cseId"], ["#psKey", "pagespeed"],
+    ["#chKey", "ch"], ["#hunterKey", "hunter"],
+    ["#apiKey", "google"], ["#serpKey", "serp"],
+  ];
+  fields.forEach(([sel, name]) => {
+    const v = $(sel)?.value.trim();
+    if (v && !v.startsWith("•")) keys[name] = v;
+  });
   try {
     await api("/api/assistant/config", {save: {keys}});
     $("#apiKeysMsg").innerHTML = '<div class="msg ok">API keys saved.</div>';
-  } catch(e){
-    $("#apiKeysMsg").innerHTML = `<div class="msg err">${esc(e.message)}</div>`;
-  }
+    setTimeout(() => { const el = $("#apiKeysMsg"); if(el) el.innerHTML = ""; }, 3000);
+  } catch(e){ $("#apiKeysMsg").innerHTML = `<div class="msg err">${esc(e.message)}</div>`; }
 };
 
-$("#testKey").onclick = async () => {
-  const b = $("#testKey"); b.disabled = true; b.innerHTML = '<span class="spin"></span> Testing…';
-  try { const j = await api("/api/test-key", {apiKey: $("#apiKey").value.trim()}); $("#testMsg").innerHTML = `<div class="msg ok">${esc(j.message)}</div>`; }
+$('#testKey').onclick = async () => {
+  const b = $("#testKey"); b.disabled = true; b.innerHTML = '<span class="spin"></span>';
+  try { const j = await api("/api/test-key", {apiKey: $("#apiKey").value.trim()});
+        $("#testMsg").innerHTML = `<div class="msg ok">${esc(j.message)}</div>`; }
   catch(err){ $("#testMsg").innerHTML = `<div class="msg err">${esc(err.message)}</div>`; }
-  b.disabled = false; b.textContent = "Test Google key";
+  b.disabled = false; b.textContent = "🔬 Test Google Key";
 };
+
+/* ── Source note ── */
 function srcNote(){
-  const src = document.querySelector('input[name=src]:checked').value;
+  const src = document.querySelector('input[name=src]:checked')?.value;
+  if (!src) return;
   $("#deepWrap").hidden = src !== "google";
-  $("#srcNote").textContent = src === "google"
-    ? "Google Maps shows whether each business has a website, so 'no website' results are reliable. Deep search splits the city into areas to find more businesses (uses more API calls)."
-    : src === "serpapi"
-    ? "Same Google Maps data, fetched through SerpApi. Add your SerpApi key in Settings. Each page of 20 results uses one SerpApi search."
-    : "Free, no key. Pick a type from the suggestions and use a city (not a whole country). OpenStreetMap often lacks website info, so 'no website' here means none listed. Use the Research links to double-check.";
+  const notes = {
+    google: "Google Places API: most accurate, shows website status directly. Deep mode divides the city into grid squares for 240–540 results (uses more API quota).",
+    serpapi: "SerpApi: same Google Maps data without a Google Cloud account. Each page of 20 results = 1 search credit.",
+    osm: "OpenStreetMap: 100% free, no API key. Website data is sparse — use Research links to verify. Best for smaller towns.",
+  };
+  $("#srcNote").textContent = notes[src] || "";
 }
 document.querySelectorAll('input[name=src]').forEach(r => r.onchange = srcNote);
 srcNote();
 
-/* scoring */
+/* ── Scoring ── */
 function siteState(l){
   if (!l.website) return "no";
   if (isSocial(l.website)) return "social";
@@ -430,48 +1938,111 @@ function score(l){
   return Math.round(Math.min(100, s));
 }
 
+/* ── Research links ── */
 function researchLinks(l){
   const q = encodeURIComponent(`${l.name} ${l.address||""}`.trim());
   const n = encodeURIComponent(l.name);
   return `<div class="acts">
-    <a class="btn sm" target="_blank" rel="noopener" href="https://www.google.com/search?q=${q}">Google</a>
-    ${l.mapsUrl ? `<a class="btn sm" target="_blank" rel="noopener" href="${esc(l.mapsUrl)}">Map</a>` : ""}
-    <a class="btn sm" target="_blank" rel="noopener" href="https://www.facebook.com/search/pages?q=${n}">Facebook</a>
-    <a class="btn sm" target="_blank" rel="noopener" href="https://www.google.com/search?q=${encodeURIComponent(l.name + ' site:instagram.com')}">Instagram</a>
-    <a class="btn sm" target="_blank" rel="noopener" href="https://www.google.com/search?q=${encodeURIComponent('"' + l.name + '" email')}">Email search</a>
+    <a class="btn sm ghost" target="_blank" rel="noopener" href="https://www.google.com/search?q=${q}">Google</a>
+    ${l.mapsUrl ? `<a class="btn sm ghost" target="_blank" rel="noopener" href="${esc(l.mapsUrl)}">Maps</a>` : ""}
+    <a class="btn sm ghost" target="_blank" rel="noopener" href="https://www.facebook.com/search/pages?q=${n}">FB</a>
+    <a class="btn sm ghost" target="_blank" rel="noopener" href="https://www.google.com/search?q=${encodeURIComponent(l.name + ' site:instagram.com')}">IG</a>
   </div>`;
 }
+
+/* ── Contact cell ── */
 function contactCell(l){
   const d = digits(l.phone);
-  return `${l.phone ? `<div><a href="tel:${esc(l.phone.replace(/\s/g,""))}">${esc(l.phone)}</a></div>
-      <div class="acts" style="margin-top:3px"><a class="btn sm" target="_blank" rel="noopener" href="https://wa.me/${d}">WhatsApp</a></div>` : '<span class="sub">No phone listed</span>'}
-    ${l.email ? `<div style="margin-top:4px"><a href="mailto:${esc(l.email)}">${esc(l.email)}</a>${l.emailStatus ? ` <span class="tag ${l.emailStatus==="deliverable-domain"?"t-no":l.emailStatus==="invalid"?"t-yes":"t-weak"}">${{"deliverable-domain":"verified domain",invalid:"invalid",unknown:"unverified",guessed:"guessed"}[l.emailStatus]||esc(l.emailStatus)}</span>` : ""}</div>` : ""}
-    ${!l.email && l.guessedEmails && l.guessedEmails.length ? `<div class="sub" style="margin-top:4px">Try: ${esc(l.guessedEmails.slice(0,2).join(", "))} <span class="tag t-weak">guessed</span></div>` : ""}
-    ${l.contactPage ? `<div><a class="sub" target="_blank" rel="noopener" href="${esc(l.contactPage)}">Contact form ↗</a></div>` : ""}
-    ${l.emailsFound && l.emailsFound.length > 1 ? `<div class="sub">${esc(l.emailsFound.slice(1).join(", "))}</div>` : ""}
-    ${l.social ? `<div class="sub">${esc(l.social)}</div>` : ""}`;
+  return `${l.phone ? `<div class="nm" style="font-size:13px"><a href="tel:${esc(l.phone.replace(/\s/g,""))}">${esc(l.phone)}</a></div>
+    <div class="acts" style="margin-top:3px"><a class="btn sm" target="_blank" rel="noopener" href="https://wa.me/${d}">💬 WhatsApp</a></div>` : '<span class="sub">No phone</span>'}
+    ${l.email ? `<div style="margin-top:5px"><a href="mailto:${esc(l.email)}" style="font-size:12px">${esc(l.email)}</a>
+      ${l.emailStatus ? ` <span class="badge ${l.emailStatus==="deliverable-domain"?"green":l.emailStatus==="invalid"?"red":"yellow"}">${{"deliverable-domain":"✓ verified",invalid:"✗ invalid",unknown:"? unverified",guessed:"~ guessed"}[l.emailStatus]||esc(l.emailStatus)}</span>` : ""}</div>` : ""}
+    ${l.social ? `<div class="sub" style="margin-top:3px">${esc(l.social)}</div>` : ""}`;
 }
+
+/* ── Site cell ── */
 function siteCell(l, withActions){
   const st = siteState(l);
-  let h = st === "no" ? '<span class="tag t-no">No website</span>'
-        : st === "social" ? `<span class="tag t-no">Social page only</span><div class="sub">${esc(host(l.website))}</div>`
-        : `<span class="tag ${st==="weak"?"t-weak":"t-yes"}">${st==="weak"?"Weak site":"Has site"}</span>
+  let h = st === "no"     ? '<span class="badge green">No website</span>'
+        : st === "social" ? `<span class="badge yellow">Social only</span><div class="sub">${esc(host(l.website))}</div>`
+        : `<span class="badge ${st==="weak"?"yellow":"gray"}">${st==="weak"?"Weak site":"Has site"}</span>
            <div><a class="sub" target="_blank" rel="noopener" href="${esc(/^https?:/i.test(l.website)?l.website:"http://"+l.website)}">${esc(host(l.website))}</a></div>`;
   if (l.audit){
-    h += l.audit.issues.length ? `<ul class="issues">${l.audit.issues.map(i=>`<li>${esc(i)}</li>`).join("")}</ul>` : '<div class="sub">No obvious problems</div>';
+    h += l.audit.issues.length
+      ? `<ul class="issues">${l.audit.issues.map(i=>`<li>${esc(i)}</li>`).join("")}</ul>`
+      : '<div class="sub">✓ No obvious problems</div>';
   }
   if (withActions && l.website && !isSocial(l.website)){
-    h += `<div class="acts" style="margin-top:4px">
-      <button class="btn sm" data-act="email" data-id="${esc(l.id)}">Find email</button>
-      <button class="btn sm" data-act="audit" data-id="${esc(l.id)}">Check site</button></div>`;
+    h += `<div class="acts" style="margin-top:5px">
+      <button class="btn sm" data-act="email" data-id="${esc(l.id)}">📧 Email</button>
+      <button class="btn sm" data-act="audit" data-id="${esc(l.id)}">🔎 Audit</button></div>`;
   }
   return h;
 }
 
-/* search */
+/* ── Priority tag ── */
+function prioTag(l){
+  const idb = window.LFIdentity ? window.LFIdentity.badge(l) : "";
+  const idBtn = !l.identity && window.LFIdentity
+    ? `<div style="margin-top:4px"><button class="btn sm ghost" data-idopen="${esc(l.id)}">👤 Identity</button></div>` : "";
+  return prioOnly(l) + idb + idBtn;
+}
+function prioOnly(l){
+  if (!l.priority) return '<span class="sub">Not analyzed</span>';
+  const cls = l.priority==="Hot" ? "accent" : l.priority==="Warm" ? "yellow" : "gray";
+  return `<span class="badge ${cls}">${l.priority==="Hot"?"🔥":l.priority==="Warm"?"🌡️":"📉"} ${l.priority}</span>`;
+}
+
+/* ── Render results ── */
+function renderResults(){
+  const rows = shown().map(l => ({...l, _score: score(l)}));
+  const PR = {Hot:3, Warm:2, Low:1};
+  const val = (l,k) => k==="priority" ? (PR[l.priority]||0)*1000 + l._score : k==="score" ? l._score
+    : k==="reviews" ? (l.reviews||0) : k==="site" ? siteState(l) : (l[k]||"").toLowerCase();
+  rows.sort((a,b) => (val(a,sortKey) > val(b,sortKey) ? 1 : val(a,sortKey) < val(b,sortKey) ? -1 : 0) * sortDir);
+  const noSite = results.filter(l => ["no","social"].includes(siteState(l))).length;
+  $("#resultsInfo").innerHTML = `<span class="badge gray">${results.length} found</span> <span class="badge green" style="margin-left:4px">${noSite} no website</span> <span class="badge gray" style="margin-left:4px">Showing ${rows.length}</span>`;
+  const inList = new Set(myList.map(l => l.id));
+  $("#results").innerHTML = rows.length ? rows.map(l => `<tr>
+    <td>${prioTag(l)}
+      <div style="margin-top:5px"><button class="btn sm" data-act="analyze" data-id="${esc(l.id)}">${l.analysis?"📋 Report":"⚡ Analyze"}</button></div></td>
+    <td><span class="score ${l._score>=70?"hot":l._score>=40?"warm":""}">${l._score}</span></td>
+    <td><div class="nm">${esc(l.name)}</div><div class="sub">${esc(l.category)}</div><div class="sub">${esc(l.address)}</div></td>
+    <td>${contactCell(l)}</td>
+    <td>${siteCell(l, true)}</td>
+    <td>${l.rating ? `<div style="color:var(--yellow)">${l.rating}★</div>` : ""}
+        <div class="sub">${l.reviews ? l.reviews+" reviews" : "n/a"}</div></td>
+    <td>${researchLinks(l)}</td>
+    <td>${inList.has(l.id) ? '<span class="badge green">✓ In list</span>' : `<button class="btn sm primary" data-act="add" data-id="${esc(l.id)}">➕ Add</button>`}</td>
+  </tr>`).join("")
+  : `<tr><td colspan="8">
+      <div class="empty">
+        <div class="empty-icon">🔍</div>
+        <div class="empty-title">No results with this filter</div>
+        <div>Try "All businesses" or search a different area</div>
+      </div>
+    </td></tr>`;
+}
+
+document.querySelectorAll("th[data-sort]").forEach(th => th.onclick = () => {
+  const k = th.dataset.sort; sortDir = sortKey === k ? -sortDir : (k==="name"?1:-1); sortKey = k; renderResults();
+});
+
+function shown(){
+  const f = $("#qFilter")?.value;
+  return results.filter(l => {
+    const st = siteState(l);
+    if (f === "no") return st === "no" || st === "social";
+    if (f === "weak") return st !== "yes";
+    return true;
+  });
+}
+$("#qFilter") && ($("#qFilter").onchange = () => results.length && renderResults());
+
+/* ── Search ── */
 $("#searchForm").onsubmit = async e => {
   e.preventDefault();
-  const src = document.querySelector('input[name=src]:checked').value;
+  const src = document.querySelector('input[name=src]:checked')?.value;
   const type = $("#qType").value.trim(), loc = $("#qLoc").value.trim();
   const btn = $("#searchBtn");
   btn.disabled = true; btn.innerHTML = '<span class="spin"></span> Searching…';
@@ -486,56 +2057,13 @@ $("#searchForm").onsubmit = async e => {
     results = j.leads.map(l => ({...l, emailsFound: l.email ? [l.email] : []}));
     renderResults();
     $("#resultsWrap").hidden = false;
+    $("#resultsWrap").scrollIntoView({behavior:"smooth", block:"start"});
   } catch(err){
     $("#findMsg").innerHTML = `<div class="msg err">${esc(err.message)}</div>`;
   } finally {
-    btn.disabled = false; btn.textContent = "Search";
+    btn.disabled = false; btn.innerHTML = "🔍 Search";
   }
 };
-
-function shown(){
-  const f = $("#qFilter").value;
-  return results.filter(l => {
-    const st = siteState(l);
-    if (f === "no") return st === "no" || st === "social";
-    if (f === "weak") return st !== "yes";
-    return true;
-  });
-}
-$("#qFilter").onchange = () => results.length && renderResults();
-
-function prioTag(l){
-  const idb = window.LFIdentity ? window.LFIdentity.badge(l) : "";
-  const idBtn = !l.identity && window.LFIdentity ? `<div style="margin-top:4px"><button class="btn sm" data-idopen="${esc(l.id)}">Identity</button></div>` : "";
-  return prioOnly(l) + idb + idBtn;
-}
-function prioOnly(l){
-  if (!l.priority) return '<span class="sub">Not analyzed</span>';
-  const c = l.priority==="Hot" ? "t-no" : l.priority==="Warm" ? "t-weak" : "t-yes";
-  return `<span class="tag ${c}" style="font-weight:600">${l.priority}</span>`;
-}
-function renderResults(){
-  const rows = shown().map(l => ({...l, _score: score(l)}));
-  const PR = {Hot:3, Warm:2, Low:1};
-  const val = (l,k) => k==="priority" ? (PR[l.priority]||0)*1000 + l._score : k==="score" ? l._score : k==="reviews" ? (l.reviews||0) : k==="site" ? siteState(l) : (l[k]||"").toLowerCase();
-  rows.sort((a,b) => (val(a,sortKey) > val(b,sortKey) ? 1 : val(a,sortKey) < val(b,sortKey) ? -1 : 0) * sortDir);
-  const noSite = results.filter(l => ["no","social"].includes(siteState(l))).length;
-  $("#resultsInfo").textContent = `${results.length} businesses found, ${noSite} without a real website. Showing ${rows.length}.`;
-  const inList = new Set(myList.map(l => l.id));
-  $("#results").innerHTML = rows.length ? rows.map(l => `<tr>
-    <td>${prioTag(l)}<div style="margin-top:4px"><button class="btn sm" data-act="analyze" data-id="${esc(l.id)}">${l.analysis ? "View report" : "Analyze"}</button></div></td>
-    <td><span class="score ${l._score>=70?"hot":""}">${l._score}</span></td>
-    <td><div class="nm">${esc(l.name)}</div><div class="sub">${esc(l.category)}</div><div class="sub">${esc(l.address)}</div></td>
-    <td>${contactCell(l)}</td>
-    <td>${siteCell(l, true)}</td>
-    <td>${l.rating ? `${l.rating}★` : ""}<div class="sub">${l.reviews ? l.reviews + " reviews" : (String(l.source).startsWith("Google") ? "No reviews" : "n/a")}</div></td>
-    <td>${researchLinks(l)}</td>
-    <td>${inList.has(l.id) ? '<span class="sub">In list</span>' : `<button class="btn sm primary" data-act="add" data-id="${esc(l.id)}">Add</button>`}</td>
-  </tr>`).join("") : `<tr><td colspan="8" class="empty">No matches with this filter. Try "All businesses" or another area.</td></tr>`;
-}
-document.querySelectorAll("th[data-sort]").forEach(th => th.onclick = () => {
-  const k = th.dataset.sort; sortDir = sortKey === k ? -sortDir : (k==="name"?1:-1); sortKey = k; renderResults();
-});
 
 async function doEmail(l){
   const j = await api("/api/emails", {url: l.website});
@@ -552,7 +2080,7 @@ $("#results").onclick = async e => {
   if (b.dataset.act === "analyze"){ window.LFReport.open(l, x => { saveLead(x); renderResults(); }); return; }
   b.disabled = true; b.innerHTML = '<span class="spin"></span>';
   try {
-    if (b.dataset.act === "email"){ await doEmail(l); if (!l.emailsFound.length) l.social = (l.social ? l.social + " · " : "") + "No email found on site"; }
+    if (b.dataset.act === "email") await doEmail(l);
     else await doAudit(l);
   } catch(err){ alert(err.message); }
   syncToList(l); renderResults();
@@ -560,82 +2088,107 @@ $("#results").onclick = async e => {
 
 async function runBulk(btn, fn, filter){
   const targets = shown().filter(filter);
-  if (!targets.length){ alert("Nothing to check in the current view. Switch Show to 'All businesses' to include businesses with websites."); return; }
-  btn.disabled = true; const label = btn.textContent;
-  let done = 0;
-  const queue = [...targets];
-  const worker = async () => { while (queue.length){ const l = queue.shift(); try { await fn(l); } catch(e){} syncToList(l); done++; btn.textContent = `${done}/${targets.length}…`; } };
-  await Promise.all(Array.from({length: 5}, worker));
-  btn.disabled = false; btn.textContent = label; renderResults();
+  if (!targets.length){ alert("Nothing to process in the current view."); return; }
+  btn.disabled = true; const label = btn.innerHTML; let done = 0;
+  const q = [...targets];
+  const worker = async () => { while (q.length){ const l = q.shift();
+    try { await fn(l); } catch(e){} syncToList(l); done++;
+    btn.innerHTML = `<span class="spin"></span> ${done}/${targets.length}`; } };
+  await Promise.all(Array.from({length:5}, worker));
+  btn.disabled = false; btn.innerHTML = label; renderResults();
 }
 $("#bulkEmail").onclick = e => runBulk(e.target, doEmail, l => l.website && !isSocial(l.website) && !l.emailChecked);
 $("#bulkAudit").onclick = e => runBulk(e.target, doAudit, l => l.website && !isSocial(l.website) && !l.audit);
 $("#addAll").onclick = () => { addToList(shown()); renderResults(); };
 $("#exportResults").onclick = () => downloadCsv("leads.csv", shown().map(l => ({...l, score: score(l)})));
 
-/* list */
-function saveList(){ store.set("lf-list", myList); $("#listCount").textContent = myList.length ? `(${myList.length})` : ""; }
+/* ── My List ── */
+function saveList(){ store.set("lf-list", myList);
+  const lc = $("#listCount");
+  if (lc){ lc.textContent = myList.length || ""; lc.style.display = myList.length ? "" : "none"; }
+}
 function addToList(arr){
   const have = new Set(myList.map(l => l.id)); let n = 0;
-  arr.forEach(l => { if (!have.has(l.id)) { myList.unshift({...l, stage:"New", notes:"", followUp:"", added:new Date().toISOString().slice(0,10)}); n++; } });
+  arr.forEach(l => { if (!have.has(l.id)){ myList.unshift({...l, stage:"New", notes:"", followUp:"", added:new Date().toISOString().slice(0,10)}); n++; } });
   saveList();
-  if (n && window.LF && window.LF.log) window.LF.log("newLeads", n);
-  $("#findMsg").innerHTML = `<div class="msg ok">Added ${n} business${n===1?"":"es"} to My list.</div>`;
+  if (n && window.LF?.log) window.LF.log("newLeads", n);
+  $("#findMsg").innerHTML = n ? `<div class="msg ok">Added ${n} lead${n===1?"":"s"} to My List.</div>` : "";
+  setTimeout(() => { const el = $("#findMsg"); if(el) el.innerHTML = ""; }, 3000);
 }
 function syncToList(l){
   const m = myList.find(x => x.id === l.id);
   if (m){ Object.assign(m, {email:l.email, emailsFound:l.emailsFound, audit:l.audit, social:l.social}); saveList(); }
 }
+
 $("#listStage").innerHTML = '<option value="">All stages</option>' + STAGES.map(s => `<option>${s}</option>`).join("");
-$("#listSearch").oninput = renderList; $("#listStage").onchange = renderList;
+($("#listSearch")) && ($("#listSearch").oninput = renderList);
+($("#listStage")) && ($("#listStage").onchange = renderList);
 
 function renderList(){
-  const term = $("#listSearch").value.toLowerCase(), stage = $("#listStage").value;
+  const term = $("#listSearch")?.value.toLowerCase() || "", stage = $("#listStage")?.value || "";
   const today = new Date().toISOString().slice(0,10);
   const count = s => myList.filter(l => l.stage === s).length;
   const due = myList.filter(l => l.followUp && l.followUp <= today && !["Won","Not interested"].includes(l.stage)).length;
-  $("#tally").innerHTML = `<div><b>${myList.length}</b><span>in list</span></div>
-    <div><b>${count("New")}</b><span>not contacted</span></div>
-    <div><b>${due}</b><span>follow-ups due</span></div>
-    <div><b>${count("Interested")+count("Proposal sent")}</b><span>warm</span></div>
-    <div><b>${count("Won")}</b><span>won</span></div>`;
-  const rows = myList.filter(l => (!stage || l.stage === stage) &&
-    (!term || `${l.name} ${l.address} ${l.phone} ${l.email} ${l.category}`.toLowerCase().includes(term)));
-  $("#listBody").innerHTML = rows.length ? rows.map(l => `<tr data-id="${esc(l.id)}">
-    <td><div class="nm">${esc(l.name)}</div>${l.ownerName ? `<div class="sub">👤 ${esc(l.ownerName)}</div>` : ""}<div class="sub">${esc(l.category)}</div><div class="sub">${esc(l.address)}</div>
-      <div style="margin-top:4px">${researchLinks(l)}</div></td>
-    <td>${prioTag(l)}<div style="margin-top:4px"><button class="btn sm" data-analyze="1">${l.analysis ? "View report" : "Analyze"}</button></div></td>
+  const tallyEl = $("#tally");
+  if (tallyEl) tallyEl.innerHTML = [
+    [myList.length, "total leads"],
+    [count("New"), "not contacted"],
+    [due, "follow-ups due", due ? "color:var(--red)" : ""],
+    [count("Interested")+count("Proposal sent"), "warm leads", "color:var(--yellow)"],
+    [count("Won"), "won 🏆", "color:var(--green)"],
+  ].map(([v,lbl,style=""]) => `<div><b style="${style}">${v}</b><span>${lbl}</span></div>`).join("");
+
+  const rows = myList.filter(l => (!stage||l.stage===stage) &&
+    (!term||`${l.name} ${l.address||""} ${l.phone||""} ${l.email||""} ${l.category||""}`.toLowerCase().includes(term)));
+  const lb = $("#listBody");
+  if (!lb) return;
+  lb.innerHTML = rows.length ? rows.map(l => `<tr data-id="${esc(l.id)}">
+    <td><div class="nm">${esc(l.name)}</div>
+      ${l.ownerName ? `<div class="sub">👤 ${esc(l.ownerName)}</div>` : ""}
+      <div class="sub">${esc(l.category||"")}</div><div class="sub">${esc(l.address||"")}</div>
+      <div style="margin-top:5px">${researchLinks(l)}</div></td>
+    <td>${prioTag(l)}<div style="margin-top:5px"><button class="btn sm ghost" data-analyze="1">${l.analysis?"📋 Report":"⚡ Analyze"}</button></div></td>
     <td>${contactCell(l)}</td>
     <td>${siteCell(l, false)}</td>
-    <td><select data-f="stage">${STAGES.map(s => `<option${s===l.stage?" selected":""}>${s}</option>`).join("")}</select></td>
-    <td><input type="date" data-f="followUp" value="${esc(l.followUp)}" style="${l.followUp && l.followUp<=today && !["Won","Not interested"].includes(l.stage) ? "border-color:var(--warn)" : ""}"></td>
-    <td><textarea data-f="notes" placeholder="Owner, price quoted…">${esc(l.notes)}</textarea></td>
-    <td><button class="btn sm" data-del="1">Remove</button></td>
-  </tr>`).join("") : `<tr><td colspan="8" class="empty">Your list is empty. Search for leads and press Add, or import a CSV.</td></tr>`;
+    <td><select data-f="stage" style="font-size:12px">${STAGES.map(s => `<option${s===l.stage?" selected":""}>${s}</option>`).join("")}</select></td>
+    <td><input type="date" data-f="followUp" value="${esc(l.followUp||"")}" style="${l.followUp&&l.followUp<=today&&!["Won","Not interested"].includes(l.stage)?"border-color:var(--red)":""}"></td>
+    <td><textarea data-f="notes" placeholder="Notes…" style="min-height:40px">${esc(l.notes||"")}</textarea></td>
+    <td><button class="btn sm danger" data-del="1">✕</button></td>
+  </tr>`).join("")
+  : `<tr><td colspan="8"><div class="empty"><div class="empty-icon">📭</div>
+      <div class="empty-title">Your list is empty</div>
+      <div>Search for leads and press Add, or import a CSV</div></div></td></tr>`;
 }
-$("#listBody").onchange = e => {
+
+($("#listBody")) && ($("#listBody").onchange = e => {
   const f = e.target.dataset.f; if (!f) return;
-  const l = myList.find(x => x.id === e.target.closest("tr").dataset.id);
-  l[f] = e.target.value; saveList(); if (f !== "notes") renderList();
-};
-$("#listBody").onclick = e => {
+  const id = e.target.closest("tr")?.dataset.id;
+  const l = myList.find(x => x.id === id);
+  if (l){ l[f] = e.target.value; saveList(); if (f !== "notes") renderList(); }
+});
+
+($("#listBody")) && ($("#listBody").onclick = e => {
   if (e.target.dataset.analyze){
-    const l = myList.find(x => x.id === e.target.closest("tr").dataset.id);
-    if (l.source === "Import"){ alert("Imported businesses have no map location. Search for them in Find leads to analyze."); return; }
-    window.LFReport.open(l, x => { saveLead(x); renderList(); }); return;
+    const l = myList.find(x => x.id === e.target.closest("tr")?.dataset.id);
+    if (l?.source === "Import"){ alert("Imported businesses have no map location. Search for them in Find leads to analyze."); return; }
+    if (l) window.LFReport.open(l, x => { saveLead(x); renderList(); });
+    return;
   }
   if (!e.target.dataset.del) return;
-  const id = e.target.closest("tr").dataset.id;
+  const id = e.target.closest("tr")?.dataset.id;
   myList = myList.filter(l => l.id !== id); saveList(); renderList();
-};
-$("#clearList").onclick = () => { if (confirm("Remove every business from your list?")) { myList = []; saveList(); renderList(); } };
-$("#exportList").onclick = () => downloadCsv("my-leads.csv", myList);
+});
 
-/* csv */
+($("#clearList")) && ($("#clearList").onclick = () => {
+  if (confirm("Remove every business from your list?")){ myList = []; saveList(); renderList(); }
+});
+($("#exportList")) && ($("#exportList").onclick = () => downloadCsv("my-leads.csv", myList));
+
+/* ── CSV ── */
 const COLS = [["name","Name"],["ownerName","Owner"],["category","Type"],["address","Address"],["phone","Phone"],["email","Email"],["website","Website"],
   ["social","Social"],["rating","Rating"],["reviews","Reviews"],["score","Score"],["priority","Priority"],["stage","Stage"],["followUp","Follow-up"],["notes","Notes"],["mapsUrl","Map link"]];
 function downloadCsv(name, rows){
-  const q = v => `"${String(v ?? "").replace(/"/g,'""')}"`;
+  const q = v => `"${String(v??"").replace(/"/g,'""')}"`;
   const lines = [COLS.map(c => c[1]).join(",")].concat(rows.map(r => COLS.map(([k]) =>
     q(k==="score" ? (r.score ?? score(r)) : k==="website" && !r.website ? "NONE" : r[k])).join(",")));
   const blob = new Blob(["\ufeff" + lines.join("\r\n")], {type:"text/csv"});
@@ -643,102 +2196,432 @@ function downloadCsv(name, rows){
   setTimeout(() => URL.revokeObjectURL(a.href), 2000);
 }
 function parseCsv(text){
-  const out = []; let row = [], cur = "", q = false;
-  for (let i = 0; i < text.length; i++){
-    const c = text[i];
-    if (q){ if (c === '"'){ if (text[i+1] === '"'){ cur += '"'; i++; } else q = false; } else cur += c; }
-    else if (c === '"') q = true;
-    else if (c === ","){ row.push(cur); cur = ""; }
-    else if (c === "\n" || c === "\r"){ if (c === "\r" && text[i+1] === "\n") i++; row.push(cur); out.push(row); row = []; cur = ""; }
-    else cur += c;
+  const out=[]; let row=[],cur="",q=false;
+  for(let i=0;i<text.length;i++){
+    const c=text[i];
+    if(q){if(c==='"'){if(text[i+1]==='"'){cur+='"';i++;}else q=false;}else cur+=c;}
+    else if(c==='"')q=true;
+    else if(c===','){row.push(cur);cur="";}
+    else if(c==='\n'||c==='\r'){if(c==='\r'&&text[i+1]==='\n')i++;row.push(cur);out.push(row);row=[];cur="";}
+    else cur+=c;
   }
-  if (cur || row.length){ row.push(cur); out.push(row); }
-  return out.filter(r => r.some(x => x.trim()));
+  if(cur||row.length){row.push(cur);out.push(row);}
+  return out.filter(r=>r.some(x=>x.trim()));
 }
-$("#importCsv").onchange = async e => {
+($("#importCsv")) && ($("#importCsv").onchange = async e => {
   const f = e.target.files[0]; if (!f) return;
-  const rows = parseCsv((await f.text()).replace(/^\ufeff/, ""));
+  const rows = parseCsv((await f.text()).replace(/^\ufeff/,""));
   const head = rows.shift().map(h => h.trim().toLowerCase());
   const idx = names => head.findIndex(h => names.includes(h));
   const map = {name:idx(["name","business"]), category:idx(["type","category"]), address:idx(["address","area"]),
     phone:idx(["phone","phone number"]), email:idx(["email"]), website:idx(["website"]), stage:idx(["stage"]), notes:idx(["notes"])};
-  if (map.name < 0){ alert("The CSV needs a 'Name' column."); return; }
+  if (map.name < 0){ alert("CSV needs a 'Name' column."); return; }
   const have = new Set(myList.map(l => l.id)); let n = 0;
-  rows.forEach((r, i) => {
+  rows.forEach(r => {
     const g = k => map[k] >= 0 ? (r[map[k]] || "").trim() : "";
     let site = g("website"); if (/^(none|no website|not checked|has website)$/i.test(site)) site = "";
-    const id = "csv:" + (g("name") + g("phone")).toLowerCase();
+    const id = "csv:" + (g("name")+g("phone")).toLowerCase();
     if (!g("name") || have.has(id)) return;
-    myList.push({id, source:"Import", name:g("name"), category:g("category"), address:g("address"), phone:g("phone"),
-      email:g("email"), website:site, stage: STAGES.includes(g("stage")) ? g("stage") : "New", notes:g("notes"), followUp:"", reviews:0});
+    myList.push({id, source:"Import", name:g("name"), category:g("category"), address:g("address"),
+      phone:g("phone"), email:g("email"), website:site,
+      stage: STAGES.includes(g("stage")) ? g("stage") : "New", notes:g("notes"), followUp:"", reviews:0});
     have.add(id); n++;
   });
-  saveList(); renderList(); e.target.value = "";
+  saveList(); renderList(); e.target.value="";
   alert(`Imported ${n} businesses.`);
-};
+});
 
-/* hooks for the prospect report */
+/* ── Best targets ── */
 const SRC_KEY = s => String(s).startsWith("Google (") ? "serpapi" : String(s).startsWith("Google") ? "google" : "osm";
-window.LF = {
-  api, settings: () => settings, sourceOf: l => SRC_KEY(l.source),
-  inList: l => myList.some(x => x.id === l.id),
-  addToList: l => { addToList([l]); renderResults(); },
-  getList: () => myList,
-  getShown: () => shown(),
-  addLeads: (leads) => {
-    const added = [];
-    (leads || []).forEach(l => { if (!myList.some(x => x.id === l.id)){ myList.push({...l, stage:"New", addedAt: new Date().toISOString().slice(0,10)}); added.push(l); } });
-    if (added.length){ saveList(); if (!document.getElementById("tab-list").hidden) renderList(); }
-    return added.length;
-  },
-  updateLead: (id, patch) => {
-    const l = myList.find(x => x.id === id);
-    if (l){ Object.assign(l, patch); saveList(); }
-  },
-  saveLead: (l) => saveLead(l),
-  refresh: () => { renderList(); renderResults(); },
-  showTab: (name) => showTab(name),
-  bindTab: (b, cb) => bindTab(b, cb),
-};
-function saveLead(l){
-  const m = myList.find(x => x.id === l.id);
-  const F = ["identity","ownerInfo","ownerName","ownerLocked","contactName","pkgSelected","proposalIntro","proposalAt","analysis","priority","manualPresence","aiNotes","email","emailsFound","guessedEmails","emailStatus","contactPage","enriched","audit","social"];
-  const pick = o => Object.fromEntries(F.filter(k => o[k] !== undefined).map(k => [k, o[k]]));
-  if (m && m !== l){ Object.assign(m, pick(l)); }
-  const r = results.find(x => x.id === l.id);
-  if (r && r !== l){ Object.assign(r, pick(l)); }
-  saveList();
-}
-window.LF.saveLead = saveLead;
-window.LF.bindTab = bindTab;
-window.LF.showTab = showTab;
-window.LF.getList = () => myList;
-window.LF.updateLead = (id, patch) => { const l = myList.find(x => x.id === id); if (l){ Object.assign(l, patch); saveList(); } };
-window.LF.addLeads = arr => { addToList(arr); renderResults(); };
-window.LF.getShown = () => shown();
-window.LF.getResults = () => results;
-window.LF.refresh = () => { if (results.length) renderResults(); if (!$("#tab-list").hidden) renderList(); };
-window.LF.startSearch = (type, loc) => {
-  $("#qType").value = type; $("#qLoc").value = loc; $("#qFilter").value = "no";
-  const s = settings.apiKey ? "google" : settings.serpKey ? "serpapi" : "google";
-  document.querySelector(`input[name=src][value=${s}]`).checked = true; srcNote();
-  showTab("find"); $("#searchBtn").click();
-};
-
-$("#bestTargets").onclick = async e => {
+($("#bestTargets")) && ($("#bestTargets").onclick = async e => {
   const btn = e.target;
-  const pick = shown().map(l => ({l, s: score(l)})).sort((a,b) => b.s - a.s).slice(0, +$("#bestN").value).map(x => x.l).filter(l => !l.analysis);
-  if (!pick.length){ alert("The top leads are already analyzed. Sort by Priority."); return; }
+  const pick = shown().map(l => ({l, s: score(l)})).sort((a,b) => b.s-a.s).slice(0,+$("#bestN").value).map(x=>x.l).filter(l=>!l.analysis);
+  if (!pick.length){ alert("Top leads already analyzed. Sort by Priority."); return; }
   btn.disabled = true; let done = 0;
   const q = [...pick];
   const worker = async () => { while (q.length){ const l = q.shift();
     try { l.analysis = await api("/api/analyze", {lead:l, source:SRC_KEY(l.source), apiKey:settings.apiKey, serpKey:settings.serpKey, radius:+(settings.radius||3000)});
           l.priority = window.LFReport.insights(l, l.analysis).priority; saveLead(l); } catch(err){ l.priorityError = err.message; }
-    done++; btn.textContent = `Analyzing ${done}/${pick.length}…`; } };
+    done++; btn.innerHTML = `<span class="spin"></span> ${done}/${pick.length}`; } };
   await Promise.all([worker(), worker()]);
-  btn.disabled = false; btn.textContent = "Find best targets";
+  btn.disabled = false; btn.innerHTML = "⚡ Analyze best targets";
   sortKey = "priority"; sortDir = -1; renderResults();
+});
+
+/* ── Global window.LF ── */
+function saveLead(l){
+  const m = myList.find(x => x.id === l.id);
+  const F = ["identity","ownerInfo","ownerName","ownerLocked","contactName","pkgSelected","proposalIntro","proposalAt","analysis","priority","manualPresence","aiNotes","email","emailsFound","guessedEmails","emailStatus","contactPage","enriched","audit","social"];
+  const pick = o => Object.fromEntries(F.filter(k => o[k]!==undefined).map(k => [k, o[k]]));
+  if (m && m !== l){ Object.assign(m, pick(l)); }
+  const r = results.find(x => x.id === l.id);
+  if (r && r !== l){ Object.assign(r, pick(l)); }
+  saveList();
+}
+window.LF = {
+  api, settings: () => settings, sourceOf: l => SRC_KEY(l.source),
+  inList: l => myList.some(x => x.id === l.id),
+  addToList: l => { addToList([l]); renderResults(); },
+  getList: () => myList, getShown: () => shown(), getResults: () => results,
+  addLeads: (leads) => {
+    const added = [];
+    (leads||[]).forEach(l => { if (!myList.some(x=>x.id===l.id)){ myList.push({...l,stage:"New",addedAt:new Date().toISOString().slice(0,10)}); added.push(l); } });
+    if (added.length){ saveList(); if (!$("#tab-list").hidden) renderList(); }
+    return added.length;
+  },
+  updateLead: (id, patch) => { const l = myList.find(x=>x.id===id); if(l){Object.assign(l,patch);saveList();} },
+  saveLead, refresh: () => { renderList(); renderResults(); },
+  showTab, bindTab,
+  log: () => {},
 };
+window.LF.startSearch = (type, loc) => {
+  if($("#qType")) $("#qType").value = type;
+  if($("#qLoc")) $("#qLoc").value = loc;
+  if($("#qFilter")) $("#qFilter").value = "no";
+  const s = settings.apiKey ? "google" : settings.serpKey ? "serpapi" : "google";
+  const rb = document.querySelector(`input[name=src][value=${s}]`); if(rb) rb.checked = true;
+  srcNote(); showTab("find");
+  setTimeout(() => { const btn = $("#searchBtn"); if(btn) btn.click(); }, 100);
+};
+
+/* ═══════════════════════════════════════════════════════════════
+   THEME MANAGEMENT
+═══════════════════════════════════════════════════════════════ */
+const THEME_KEY = "lf-theme";
+function getTheme(){ return document.documentElement.getAttribute("data-theme") || "dark"; }
+function setTheme(theme){
+  document.documentElement.setAttribute("data-theme", theme);
+  localStorage.setItem(THEME_KEY, theme);
+  const btn = $("#themeToggle");
+  if (btn) btn.textContent = theme === "dark" ? "🌙" : "☀️";
+  const menu = $("#menuTheme");
+  if (menu) menu.textContent = theme === "dark" ? "☀️ Light mode" : "🌙 Dark mode";
+}
+setTheme(localStorage.getItem(THEME_KEY) || "dark");
+($("#themeToggle") && ($("#themeToggle").onclick = () => setTheme(getTheme() === "dark" ? "light" : "dark")));
+
+/* ═══════════════════════════════════════════════════════════════
+   TOAST NOTIFICATIONS
+═══════════════════════════════════════════════════════════════ */
+function toast(msg, type, title){
+  const container = $("#toastContainer"); if (!container) return;
+  const icons = { success: "✅", error: "❌", warning: "⚠️", info: "ℹ️" };
+  const el = document.createElement("div");
+  el.className = "toast " + (type || "info");
+  el.innerHTML = `<div class="toast-icon">${icons[type||"info"]}</div>
+    <div class="toast-body">${title ? `<div class="toast-title">${esc(title)}</div>` : ""}<div class="toast-msg">${esc(msg)}</div></div>`;
+  container.appendChild(el);
+  setTimeout(() => { el.classList.add("removing"); setTimeout(() => el.remove(), 250); }, 4000);
+  el.onclick = () => { el.classList.add("removing"); setTimeout(() => el.remove(), 250); };
+}
+window.LF.toast = toast;
+// Replace alert() calls with toast for non-critical messages
+window.LF._origAlert = window.alert;
+window.alert = function(msg){
+  if (typeof msg === "string" && msg.length < 200) { toast(msg, "info"); return; }
+  window.LF._origAlert(msg);
+};
+
+/* ═══════════════════════════════════════════════════════════════
+   MODAL DIALOG SYSTEM
+═══════════════════════════════════════════════════════════════ */
+function openModal(title, bodyHtml, footerHtml){
+  $("#modalTitle").textContent = title;
+  $("#modalBody").innerHTML = bodyHtml;
+  const ft = $("#modalFooter");
+  if (footerHtml){ ft.innerHTML = footerHtml; ft.style.display = "flex"; }
+  else { ft.style.display = "none"; }
+  $("#modalOverlay").classList.add("show");
+}
+function closeModal(){ $("#modalOverlay").classList.remove("show"); }
+($("#modalClose") && ($("#modalClose").onclick = closeModal));
+($("#modalOverlay") && ($("#modalOverlay").onclick = e => { if (e.target.id === "modalOverlay") closeModal(); }));
+window.LF.openModal = openModal;
+window.LF.closeModal = closeModal;
+
+/* ═══════════════════════════════════════════════════════════════
+   MOBILE MENU
+═══════════════════════════════════════════════════════════════ */
+function toggleSidebar(){
+  const sb = $("#sidebar"), ov = $("#sidebarOverlay");
+  sb.classList.toggle("open");
+  ov.classList.toggle("show");
+}
+($("#mobileMenuBtn") && ($("#mobileMenuBtn").onclick = toggleSidebar));
+($("#sidebarOverlay") && ($("#sidebarOverlay").onclick = toggleSidebar));
+
+/* ═══════════════════════════════════════════════════════════════
+   USER DROPDOWN MENU
+═══════════════════════════════════════════════════════════════ */
+const userMenu = $("#userMenu");
+($("#userAvatar") && ($("#userAvatar").onclick = e => {
+  e.stopPropagation();
+  userMenu.classList.toggle("show");
+}));
+document.addEventListener("click", e => { if (userMenu && !userMenu.contains(e.target)) userMenu.classList.remove("show"); });
+
+($("#menuTheme") && ($("#menuTheme").onclick = () => { setTheme(getTheme() === "dark" ? "light" : "dark"); userMenu.classList.remove("show"); }));
+($("#menuBackup") && ($("#menuBackup").onclick = () => { backupData(); userMenu.classList.remove("show"); }));
+($("#menuRestore") && ($("#menuRestore").onclick = () => { restoreData(); userMenu.classList.remove("show"); }));
+($("#menuShortcuts") && ($("#menuShortcuts").onclick = () => { showShortcuts(); userMenu.classList.remove("show"); }));
+($("#menuProfile") && ($("#menuProfile").onclick = () => { showProfile(); userMenu.classList.remove("show"); }));
+($("#menuAbout") && ($("#menuAbout").onclick = () => { showAbout(); userMenu.classList.remove("show"); }));
+($("#menuLogout") && ($("#menuLogout").onclick = () => { window.LFAuth?.logout(); userMenu.classList.remove("show"); }));
+
+/* Update avatar with user initial */
+function updateUserAvatar(){
+  const name = settings.myName || localStorage.getItem("lf-user-name") || "U";
+  const av = $("#userAvatar"); if (av) av.textContent = name.charAt(0).toUpperCase();
+}
+updateUserAvatar();
+
+/* ═══════════════════════════════════════════════════════════════
+   DATA BACKUP / RESTORE
+═══════════════════════════════════════════════════════════════ */
+function backupData(){
+  const backup = {
+    version: 2, date: new Date().toISOString(),
+    settings: store.get("lf-settings", {}),
+    list: store.get("lf-list", []),
+    theme: localStorage.getItem(THEME_KEY) || "dark",
+  };
+  // Also fetch server-side data
+  api("/api/assistant/config", {}).then(cfg => {
+    backup.serverConfig = (cfg.config || {}).keys ? { keys: Object.keys((cfg.config||{}).keys||{}).reduce((a,k) => { a[k] = "***"; return a; }, {}) } : null;
+    const blob = new Blob([JSON.stringify(backup, null, 2)], {type: "application/json"});
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `leadfinder-backup-${new Date().toISOString().slice(0,10)}.json`;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+    toast("Backup downloaded successfully", "success", "Backup Complete");
+  }).catch(() => {
+    const blob = new Blob([JSON.stringify(backup, null, 2)], {type: "application/json"});
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `leadfinder-backup-${new Date().toISOString().slice(0,10)}.json`;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+    toast("Backup downloaded (client data only)", "success", "Backup Complete");
+  });
+}
+
+function restoreData(){
+  const input = document.createElement("input");
+  input.type = "file"; input.accept = ".json";
+  input.onchange = async e => {
+    const f = e.target.files[0]; if (!f) return;
+    try {
+      const data = JSON.parse(await f.text());
+      if (data.settings) store.set("lf-settings", data.settings);
+      if (data.list) store.set("lf-list", data.list);
+      if (data.theme) setTheme(data.theme);
+      settings = store.get("lf-settings", {});
+      myList = store.get("lf-list", []);
+      applySettings(); saveList(); renderList(); updateUserAvatar();
+      toast("Data restored successfully", "success", "Restore Complete");
+    } catch(err){ toast("Invalid backup file", "error", "Restore Failed"); }
+  };
+  input.click();
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PROFILE MODAL
+═══════════════════════════════════════════════════════════════ */
+function showProfile(){
+  openModal("👤 Your Profile", `
+    <div class="form-group">
+      <label>Your name</label>
+      <input id="pfName" value="${esc(settings.myName||"")}" placeholder="e.g. Ali Raza">
+    </div>
+    <div class="form-group">
+      <label>Your business name</label>
+      <input id="pfBiz" value="${esc(settings.myBusiness||"")}" placeholder="e.g. Raza Web Studio">
+    </div>
+    <p style="font-size:12px;color:var(--ink-3);margin-top:8px">Used in AI-generated outreach emails and scripts.</p>
+  `, `<button class="btn ghost" onclick="LF.closeModal()">Cancel</button><button class="btn primary" id="pfSave">💾 Save</button>`);
+  ($("#pfSave") && ($("#pfSave").onclick = () => {
+    settings.myName = $("#pfName").value.trim();
+    settings.myBusiness = $("#pfBiz").value.trim();
+    store.set("lf-settings", settings);
+    updateUserAvatar();
+    applySettings();
+    closeModal();
+    toast("Profile saved", "success");
+  }));
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SHORTCUTS MODAL
+═══════════════════════════════════════════════════════════════ */
+function showShortcuts(){
+  const items = [
+    ["Ctrl + K", "Open command palette"],
+    ["Ctrl + J", "Toggle dark/light theme"],
+    ["Esc", "Close dialogs / palette"],
+    ["G then F", "Go to Find Leads"],
+    ["G then L", "Go to My List"],
+    ["G then D", "Go to Dashboard"],
+    ["G then S", "Go to Settings"],
+    ["G then O", "Go to Outreach"],
+    ["G then B", "Go to B2B Buyer Hunt"],
+  ];
+  openModal("⌨️ Keyboard Shortcuts",
+    `<div style="display:grid;gap:8px">${items.map(([k,d]) =>
+      `<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)">
+        <span style="color:var(--ink-2);font-size:13.5px">${d}</span><kbd>${k}</kbd></div>`).join("")}</div>`,
+    `<button class="btn primary" onclick="LF.closeModal()">Got it</button>`);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ABOUT MODAL
+═══════════════════════════════════════════════════════════════ */
+function showAbout(){
+  openModal("ℹ️ About LeadFinder", `
+    <div style="text-align:center;padding:8px 0">
+      <div style="font-size:42px;margin-bottom:12px">🎯</div>
+      <div style="font-family:var(--font-display);font-size:20px;font-weight:800;margin-bottom:4px">LeadFinder</div>
+      <div style="color:var(--ink-3);font-size:13px;margin-bottom:16px">AI Lead Intelligence Platform · v2.1</div>
+      <p style="color:var(--ink-2);font-size:13.5px;line-height:1.7;max-width:380px;margin:0 auto">
+        Find local businesses that need a website. Research, score, pitch, and track them — all from your own computer.
+        No SaaS subscriptions, no shared database, no pip installs.
+      </p>
+      <div style="margin-top:16px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+        <span class="badge accent">Python 3.8+</span>
+        <span class="badge green">Zero pip installs</span>
+        <span class="badge blue">10 AI providers</span>
+        <span class="badge purple">3 data sources</span>
+      </div>
+    </div>
+  `, `<button class="btn primary" onclick="LF.closeModal()">Close</button>`);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   COMMAND PALETTE (Ctrl+K)
+═══════════════════════════════════════════════════════════════ */
+const CMD_TABS = Object.entries(TAB_META).map(([k,v]) => ({id:k, label:v.label, desc:v.desc, icon:v.label.split(" ")[0]}));
+let cmdSelected = 0, cmdItems = [];
+
+function buildCmdItems(query){
+  const q = query.toLowerCase().trim();
+  const tabs = CMD_TABS.filter(t => !q || t.label.toLowerCase().includes(q) || t.desc.toLowerCase().includes(q));
+  let items = [];
+  // Tab navigation
+  if (tabs.length) items.push({type:"group", label:"Navigate"});
+  tabs.forEach(t => items.push({type:"tab", ...t}));
+  // Lead search
+  if (q){
+    const leads = myList.filter(l => l.name?.toLowerCase().includes(q) || l.email?.toLowerCase().includes(q) || l.address?.toLowerCase().includes(q)).slice(0, 5);
+    if (leads.length){ items.push({type:"group", label:"Leads"}); leads.forEach(l => items.push({type:"lead", ...l})); }
+  }
+  // Commands
+  items.push({type:"group", label:"Actions"});
+  const cmds = [
+    {id:"backup", label:"💾 Backup Data", icon:"💾"},
+    {id:"restore", label:"📥 Restore Data", icon:"📥"},
+    {id:"theme", label:getTheme()==="dark"?"☀️ Switch to Light Mode":"🌙 Switch to Dark Mode", icon:"🎨"},
+    {id:"shortcuts", label:"⌨️ Show Shortcuts", icon:"⌨️"},
+    {id:"export", label:"📥 Export My List as CSV", icon:"📥"},
+  ].filter(c => !q || c.label.toLowerCase().includes(q));
+  cmds.forEach(c => items.push({type:"cmd", ...c}));
+  return items;
+}
+
+function renderCmdResults(items){
+  const el = $("#cmdResults");
+  let html = "", itemIdx = 0;
+  items.forEach(item => {
+    if (item.type === "group"){ html += `<div class="cmd-group-label">${esc(item.label)}</div>`; }
+    else {
+      const sel = itemIdx === cmdSelected ? "selected" : "";
+      const icon = item.icon || (item.type === "lead" ? "📋" : "▶️");
+      const label = item.label || item.name || "";
+      const hint = item.desc || (item.email ? item.email : "");
+      html += `<div class="cmd-item ${sel}" data-idx="${itemIdx}" data-type="${item.type}" data-id="${esc(item.id||"")}">
+        <span class="cmd-item-icon">${icon}</span>
+        <span class="cmd-item-label">${esc(label)}</span>
+        ${hint ? `<span class="cmd-item-hint">${esc(hint)}</span>` : ""}
+      </div>`;
+      itemIdx++;
+    }
+  });
+  el.innerHTML = html || `<div class="cmd-empty">No results found</div>`;
+  // Update clickable items
+  el.querySelectorAll(".cmd-item").forEach(item => {
+    item.onclick = () => execCmdItem(items[+item.dataset.idx]);
+  });
+}
+
+function execCmdItem(item){
+  if (!item) return;
+  closeCmdPalette();
+  if (item.type === "tab") showTab(item.id);
+  else if (item.type === "lead") { showTab("list"); setTimeout(() => { $("#listSearch").value = item.name||""; renderList(); }, 100); }
+  else if (item.type === "cmd"){
+    if (item.id === "backup") backupData();
+    else if (item.id === "restore") restoreData();
+    else if (item.id === "theme") setTheme(getTheme() === "dark" ? "light" : "dark");
+    else if (item.id === "shortcuts") showShortcuts();
+    else if (item.id === "export") downloadCsv("my-leads.csv", myList);
+  }
+}
+
+function openCmdPalette(){
+  $("#cmdOverlay").classList.add("show");
+  const inp = $("#cmdInput"); inp.value = ""; inp.focus();
+  cmdItems = buildCmdItems(""); cmdSelected = 0; renderCmdResults(cmdItems);
+}
+function closeCmdPalette(){ $("#cmdOverlay").classList.remove("show"); }
+
+($("#cmdBtn") && ($("#cmdBtn").onclick = openCmdPalette));
+($("#cmdOverlay") && ($("#cmdOverlay").onclick = e => { if (e.target.id === "cmdOverlay") closeCmdPalette(); }));
+($("#cmdInput") && ($("#cmdInput").oninput = e => { cmdItems = buildCmdItems(e.target.value); cmdSelected = 0; renderCmdResults(cmdItems); }));
+($("#cmdInput") && ($("#cmdInput").onkeydown = e => {
+  const clickable = cmdItems.filter(i => i.type !== "group");
+  if (e.key === "ArrowDown"){ e.preventDefault(); cmdSelected = Math.min(cmdSelected+1, clickable.length-1); renderCmdResults(cmdItems); }
+  else if (e.key === "ArrowUp"){ e.preventDefault(); cmdSelected = Math.max(cmdSelected-1, 0); renderCmdResults(cmdItems); }
+  else if (e.key === "Enter"){ e.preventDefault(); execCmdItem(clickable[cmdSelected]); }
+}));
+
+/* ═══════════════════════════════════════════════════════════════
+   KEYBOARD SHORTCUTS
+═══════════════════════════════════════════════════════════════ */
+let gKey = false, gTimer = null;
+document.addEventListener("keydown", e => {
+  // Ctrl+K — command palette
+  if ((e.ctrlKey || e.metaKey) && e.key === "k"){ e.preventDefault(); openCmdPalette(); return; }
+  // Ctrl+J — theme toggle
+  if ((e.ctrlKey || e.metaKey) && e.key === "j"){ e.preventDefault(); setTheme(getTheme() === "dark" ? "light" : "dark"); return; }
+  // Esc — close overlays
+  if (e.key === "Escape"){ closeCmdPalette(); closeModal(); $("#userMenu")?.classList.remove("show"); return; }
+  // G + key — tab navigation (vim-style)
+  if (e.key === "g" && !e.ctrlKey && !e.metaKey && !e.altKey && document.activeElement?.tagName !== "INPUT" && document.activeElement?.tagName !== "TEXTAREA" && document.activeElement?.tagName !== "SELECT"){
+    if (gKey){ clearTimeout(gTimer); gKey = false; return; }
+    gKey = true; gTimer = setTimeout(() => gKey = false, 800); return;
+  }
+  if (gKey){
+    gKey = false; clearTimeout(gTimer);
+    const map = { f:"find", l:"list", d:"dashboard", s:"settings", o:"outreach", b:"b2b", i:"integrations", n:"inbound", c:"campaigns", h:"hiring", j:"jobsearch", r:"career", m:"mapview", t:"strategy", k:"knowledgebase", w:"whatsapp", v:"voice", e:"dorking", g:"guide", a:"assistant" };
+    const tab = map[e.key.toLowerCase()];
+    if (tab){ e.preventDefault(); showTab(tab); }
+  }
+});
+
+/* ═══════════════════════════════════════════════════════════════
+   CONNECTION STATUS MONITOR
+═══════════════════════════════════════════════════════════════ */
+let connOnline = true;
+function updateConnStatus(){
+  const dot = $("#healthDot");
+  if (!dot) return;
+  dot.style.background = connOnline ? "var(--green)" : "var(--red)";
+  const sb = $("#sidebarStatus");
+  if (sb) sb.innerHTML = connOnline
+    ? `<span class="dot"></span> Ready · ${window._cachedPages||0} pages cached`
+    : `<span class="dot" style="background:var(--red)"></span> Offline`;
+}
+window.addEventListener("online", () => { connOnline = true; updateConnStatus(); toast("Connection restored", "success"); });
+window.addEventListener("offline", () => { connOnline = false; updateConnStatus(); toast("Connection lost", "warning"); });
 
 saveList();
 })();
@@ -757,5 +2640,18 @@ saveList();
 <script src="/static/opportunities.js"></script>
 <script src="/static/pipeline.js"></script>
 <script src="/static/dorking.js"></script>
+<script src="/static/b2b.js"></script>
+<script src="/static/strategy.js"></script>
+<script src="/static/mapview.js"></script>
+<script src="/static/inbound.js"></script>
+<script src="/static/campaigns.js"></script>
+<script src="/static/knowledgebase.js"></script>
+<script src="/static/whatsapp.js"></script>
+<script src="/static/voice.js"></script>
+<script src="/static/style.js"></script>
+<script src="/static/auth.js"></script>
+<script src="/static/linkedin.js"></script>
+<script src="/static/social-auto.js"></script>
+<script src="/static/ui-patch.js"></script>
 </body>
 </html>

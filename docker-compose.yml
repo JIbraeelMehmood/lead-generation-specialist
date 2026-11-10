@@ -1,0 +1,62 @@
+version: "3.9"
+
+# ── LeadFinder Docker Compose ─────────────────────────────────────────────────
+# Usage:
+#   docker compose up -d
+#   Open http://localhost:8765
+#
+# Data is persisted in Docker volumes so it survives container restarts.
+# To use a local folder instead: replace volume mounts with bind mounts.
+
+services:
+  leadfinder:
+    build: .
+    container_name: leadfinder
+    restart: unless-stopped
+    ports:
+      - "8765:8765"      # LeadFinder web app
+      - "8766:8766"      # WhatsApp bridge (internal, exposed for debugging)
+    volumes:
+      # Persist all user data
+      - leadfinder_data:/app/data
+      # Persist WhatsApp session (required — without this you rescan QR on every restart)
+      - wa_auth:/app/whatsapp_bridge/.wa-auth
+      # Persist knowledge base files
+      - leadfinder_knowledge:/app/.leadfinder
+    environment:
+      # Optionally pass API keys as environment variables
+      # They can also be set in the app's Settings tab
+      - GOOGLE_PLACES_API_KEY=${GOOGLE_PLACES_API_KEY:-}
+      - SERPAPI_KEY=${SERPAPI_KEY:-}
+      - LEADFINDER_PORT=8765
+      - WA_BRIDGE_PORT=8766
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8765/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  leadfinder_data:
+    driver: local
+  wa_auth:
+    driver: local
+  leadfinder_knowledge:
+    driver: local
+
+# ── Optional: add a reverse proxy (nginx) for HTTPS ──────────────────────────
+# Uncomment the nginx service below and add your SSL certs to ./nginx/certs/
+#
+#  nginx:
+#    image: nginx:alpine
+#    container_name: leadfinder-nginx
+#    restart: unless-stopped
+#    ports:
+#      - "80:80"
+#      - "443:443"
+#    volumes:
+#      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+#      - ./nginx/certs:/etc/nginx/certs:ro
+#    depends_on:
+#      - leadfinder

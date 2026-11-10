@@ -133,3 +133,65 @@ Merges the **portable** parts of the Proficiently Claude plugin (`proficiently-c
 
 ## New endpoints
 `POST /api/jobsearch`, `/api/jobsearch/sources` · `POST /api/career/profile|fit|tailor|cover-letter|job/save|jobs|job|job/text|job/status|delete|fetch-posting`.
+
+
+# UI/UX Overhaul + Remaining Features (10 November 2026)
+
+## Design system
+- **New color palette** — refined dark theme with richer depth (#0B0F16 base, #00D9A6 accent, gradient logo).
+  Better contrast, more vibrant status colors, subtle glow effects.
+- **Light theme** — full light mode support via `[data-theme="light"]` CSS variables. Toggle with
+  the 🌙/☀️ button, Ctrl+J, or the user menu.
+- **Improved sidebar** — active item has left accent bar + gradient, hover transform, gradient
+  divider line, better grouping with all tabs organized (Discovery, Pipeline, Outreach,
+  Intelligence, Tools, Account).
+- **New components** — toast notifications, command palette, modal dialogs, skeleton loaders,
+  connection status badges, user avatar, dropdown menus, glassmorphism utility.
+- **Better animations** — fade-in-up on tab switches, scale-in on modals, toast slide-in/out,
+  shimmer on skeletons, smooth transitions on all interactive elements.
+- **Mobile responsive** — hamburger menu with sidebar overlay, touch-friendly targets,
+  responsive grid breakpoints, command palette adapts to viewport.
+
+## New features
+- **Command palette (Ctrl+K)** — search tabs, leads, and actions from anywhere. Arrow-key
+  navigation, Enter to execute, Esc to close. Searches My List by name/email/address.
+- **Keyboard shortcuts** — G+key navigation (G→F=Find, G→L=List, G→D=Dashboard, etc.),
+  Ctrl+K palette, Ctrl+J theme, Esc close dialogs.
+- **Toast notifications** — success/error/warning/info toasts with auto-dismiss after 4s.
+  Click to dismiss. `window.LF.toast(msg, type, title)` available to all tab modules.
+  Short `alert()` calls are auto-routed to toasts.
+- **Multi-user auth** — `auth.py` + `static/auth.js`. Enable in Settings. Users register/login
+  with username+password. Token-based sessions (7-day TTL). First user is admin. Per-user
+  sessions stored in `data/users.json` + `data/sessions.json`. API: `/api/auth/*`.
+- **LinkedIn automation config** — `static/linkedin.js`. Setup guide for the Chrome extension,
+  daily limits, delay range, connection note, stats display, CSV export of connections.
+- **Social media outreach config** — `static/social-auto.js`. AI intent qualification (6 buyer
+  categories), platform status (Threads/IG/FB/LinkedIn), interaction settings, quiet hours,
+  DM templates with variable substitution.
+- **Data backup/restore** — export all settings + lead list as JSON. Import to restore.
+  Accessible from user menu or Settings.
+- **Connection status monitor** — online/offline detection with toast notifications.
+  Health dot in topbar reflects connection state.
+- **User dropdown menu** — profile editing, backup/restore, theme toggle, keyboard shortcuts
+  reference, about dialog, logout (when multi-user is enabled).
+
+## System improvements
+- **Nav button deduplication** — `static/ui-patch.js` now removes duplicate nav buttons created
+  by dynamic JS tab modules, keeping only the pre-defined HTML buttons. Sidebar nav observer
+  catches dynamically-added buttons and deduplicates them.
+- **Smoother tab transitions** — CSS animation on section.page visibility change.
+- **Improved card hover** — border-color transition on all cards.
+- **Section animations** — `fade-in-up` animation when switching tabs.
+
+## New files
+- `auth.py` — multi-user authentication module (register, login, logout, sessions, user management)
+- `static/auth.js` — login/register UI overlay, session management, token storage
+- `static/linkedin.js` — LinkedIn automation config tab
+- `static/social-auto.js` — social media outreach automation config tab
+
+## Updated files
+- `app.html` — enhanced CSS design system, light theme, new UI components (toast, command
+  palette, modal, theme toggle, mobile menu, user dropdown), updated sidebar with all tabs,
+  multi-user settings section, TAB_META additions
+- `static/ui-patch.js` — nav button deduplication, sidebar nav MutationObserver
+- `leadfinder.py` — auth route handlers (GET + POST) for `/api/auth/*`

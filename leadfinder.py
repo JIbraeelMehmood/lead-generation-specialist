@@ -477,6 +477,54 @@ class Handler(BaseHTTPRequestHandler):
         if self.path.startswith("/api/suppression"):
             import pipeline
             return self._send(200, pipeline.handle(self.path.split("?")[0], {}))
+        # ── NEW: Server-Sent Events stream (real-time job/enrichment progress) ─
+        if self.path == "/api/events/stream":
+            import db as _db
+            import queue as _queue
+            q = _db.subscribe_events()
+            self.send_response(200)
+            self.send_header("Content-Type", "text/event-stream")
+            self.send_header("Cache-Control", "no-cache")
+            self.send_header("Connection", "keep-alive")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            # Replay last 20 events for reconnect
+            for ev in _db.recent_events(20):
+                try:
+                    self.wfile.write(f"data: {json.dumps(ev)}\n\n".encode())
+                    self.wfile.flush()
+                except Exception:
+                    return
+            while True:
+                try:
+                    payload = q.get(timeout=25)
+                    self.wfile.write(f"data: {payload}\n\n".encode())
+                    self.wfile.flush()
+                except _queue.Empty:
+                    # Send a keepalive comment
+                    try:
+                        self.wfile.write(b": keepalive\n\n")
+                        self.wfile.flush()
+                    except Exception:
+                        return
+                except Exception:
+                    return
+        # ── NEW: DB leads GET (read-only quick access) ─────────────────────
+        if self.path.startswith("/api/db/"):
+            import db as _db
+            return self._send(200, _db.handle(self.path, {}))
+        # ── NEW: Knowledge base GET (file listing / content) ──────────────
+        if self.path.startswith("/api/knowledge/"):
+            import knowledge as _kb
+            return self._send(200, _kb.handle(self.path, {}))
+        # ── NEW: Webhooks GET (list / log) ─────────────────────────────────
+        if self.path.startswith("/api/webhooks/"):
+            import webhooks as _wh
+            return self._send(200, _wh.handle(self.path, {}))
+        # ── NEW: Auth status GET ──────────────────────────────────────────
+        if self.path.startswith("/api/auth/"):
+            import auth as _auth
+            return self._send(200, _auth.handle(self.path, {}))
         self._send(404, {"error": "Not found"})
 
     def do_POST(self):
@@ -548,6 +596,67 @@ class Handler(BaseHTTPRequestHandler):
             if self.path.startswith(("/api/assistant/", "/api/pool/", "/api/contacts/")):
                 import assistant
                 return self._send(200, assistant.handle(self.path, req))
+            # ── NEW: SQLite CRM ──────────────────────────────────────────────
+            if self.path.startswith("/api/db/"):
+                import db
+                return self._send(200, db.handle(self.path, req))
+            # ── NEW: Background job queue ────────────────────────────────────
+            if self.path.startswith("/api/jobs/"):
+                import jobs, db
+                jobs.start()
+                return self._send(200, jobs.handle(self.path, req))
+            # ── NEW: Enrichment (social handles, tech stack, decision maker, Hunter, Apollo) ─
+            if self.path.startswith("/api/enrich/"):
+                import enrich
+                return self._send(200, enrich.handle(self.path, req))
+            # ── NEW: B2B international buyer discovery ───────────────────────
+            if self.path.startswith("/api/b2b/"):
+                import b2b
+                return self._send(200, b2b.handle(self.path, req))
+            # ── NEW: AI strategy generation (30-day / 90-day plan) ──────────
+            if self.path.startswith("/api/strategy/"):
+                import strategy
+                return self._send(200, strategy.handle(self.path, req))
+            # ── NEW: Inbound lead capture + reply classification ──────────────
+            if self.path.startswith("/api/inbound/"):
+                import inbound
+                return self._send(200, inbound.handle(self.path, req))
+            # ── NEW: Knowledge base (principal-awareness) ─────────────────────
+            if self.path.startswith("/api/knowledge/"):
+                import knowledge
+                return self._send(200, knowledge.handle(self.path, req))
+            # ── NEW: CRM webhooks (Zapier / Make / HubSpot) ───────────────────
+            if self.path.startswith("/api/webhooks/"):
+                import webhooks
+                return self._send(200, webhooks.handle(self.path, req))
+            # ── NEW: Campaign optimization + feedback loop ────────────────────
+            if self.path.startswith("/api/campaign/"):
+                import campaign
+                return self._send(200, campaign.handle(self.path, req))
+            # ── NEW: Indeed hiring signals ────────────────────────────────────
+            if self.path.startswith("/api/indeed/"):
+                import indeed
+                return self._send(200, indeed.handle(self.path, req))
+            # ── NEW: WhatsApp real sending (Baileys bridge) ───────────────────
+            if self.path.startswith("/api/whatsapp/"):
+                import whatsapp_bridge
+                return self._send(200, whatsapp_bridge.handle(self.path, req))
+            # ── NEW: AI Voice call agent (n8n / Vapi / Twilio) ───────────────
+            if self.path.startswith("/api/voice/"):
+                import voice_agent
+                return self._send(200, voice_agent.handle(self.path, req))
+            # ── NEW: Playwright deep scan ─────────────────────────────────────
+            if self.path.startswith("/api/deepscan/"):
+                import deepscan
+                return self._send(200, deepscan.handle(self.path, req))
+            # ── NEW: AI style learning ────────────────────────────────────────
+            if self.path.startswith("/api/style/"):
+                import style_learning
+                return self._send(200, style_learning.handle(self.path, req))
+            # ── NEW: Multi-user auth (register/login/logout/users) ───────────
+            if self.path.startswith("/api/auth/"):
+                import auth
+                return self._send(200, auth.handle(self.path, req))
             if self.path == "/api/analyze":
                 import analyzer
                 keys = {"google": req.get("apiKey") or os.environ.get("GOOGLE_PLACES_API_KEY", ""),
@@ -592,6 +701,20 @@ def main():
     srv = ThreadingHTTPServer(("127.0.0.1", PORT), Handler)
     import assistant
     assistant.start()
+    # Start background job worker (db.py + jobs.py)
+    import db, jobs, webhooks, knowledge
+    db.init()
+    jobs.start()
+    # Wire webhook auto-fire on lead stage changes
+    webhooks.patch_db_for_webhooks()
+    # Bootstrap knowledge base (create .leadfinder/knowledge/ if first run)
+    knowledge.bootstrap()
+    # Scaffold WhatsApp bridge files (Node.js server.js + package.json)
+    try:
+        import whatsapp_bridge
+        whatsapp_bridge._scaffold_bridge()
+    except Exception:
+        pass
     url = f"http://localhost:{PORT}"
     print(f"\n  LeadFinder is running at {url}\n  Press Ctrl+C to stop.\n")
     if "--no-browser" not in sys.argv:
